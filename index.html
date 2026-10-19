@@ -1,0 +1,3996 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #0a1628;
+      font-family: -apple-system, 'PingFang SC', sans-serif;
+    }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      background: #000;
+      border-radius: 55px;
+      padding: 12px;
+      box-shadow: 0 0 0 4px #1a3a5c, 0 20px 80px rgba(100, 180, 255, .15);
+    }
+
+    .screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 45px;
+      overflow: hidden;
+      background: linear-gradient(160deg, #a8d8f0 0%, #7ec8e3 30%, #1a3a5c 100%);
+      background-image: url('./assets/images/wallpaper.jpg');
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+    }
+    .screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,.12) 0%, rgba(0,0,0,.02) 40%, rgba(0,0,0,.25) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 18px 28px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0,0,0,.5);
+      position: relative;
+      z-index: 5;
+    }
+.lock-screen, .home-screen {
+  position: absolute;
+  inset: 0;
+  padding: 60px 20px 0;
+  transition:
+    transform .65s cubic-bezier(.25,.8,.25,1),
+    opacity .5s ease,
+    filter .5s ease;
+}
+
+.lock-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 92px;
+  gap: 2px;
+  background-image: url('./assets/images/photo3.jpg');
+background-size: cover;
+background-position: center;
+  z-index: 2;
+}
+    .home-screen {
+      transform: translateY(100%);
+      opacity: 0;
+      padding-bottom: 120px;
+      overflow-y: auto;
+    }
+.screen.unlocked .lock-screen {
+  transform: translateY(-12%) scale(1.06);
+  opacity: 0;
+  filter: blur(6px);
+  pointer-events: none;
+}
+    .screen.unlocked .home-screen {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+  .lock-icon-top {
+  position: absolute;
+  top: 60px;
+  font-size: 22px;
+  opacity: .9;
+}
+.lock-bottom {
+  position: absolute;
+  bottom: 42px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 38px;
+}.lock-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.16);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.12);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform .15s, background .15s;
+}
+
+.lock-btn:active {
+  transform: scale(.92);
+  background: rgba(255,255,255,.28);
+}
+
+.lock-hint {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,.75);
+  letter-spacing: 2px;
+  animation: hintFade 2s ease-in-out infinite;
+}
+
+@keyframes hintFade {
+  0%,100% { opacity: .35; }
+  50% { opacity: .9; }
+}
+.lock-time {
+  font-size: 88px;
+  font-weight: 200;
+  letter-spacing: -3px;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 24px rgba(0,0,0,.35);
+  margin-bottom: 0;
+}
+  .lock-date {
+  font-size: 17px;
+  font-weight: 500;
+  margin-bottom: -8px;
+}
+
+    .hint {
+      margin-top: 40px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #a8d8f0;
+      letter-spacing: 1px;
+    }
+
+    .hint-sub {
+      font-size: 13px;
+      opacity: .6;
+    }
+
+    /* ===== 主屏布局 ===== */
+    .home-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .memo-big {
+      grid-row: 1 / 3;
+      grid-column: 1 / 2;
+      background: rgba(255, 214, 102, .25);
+      backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 22px;
+      padding: 16px;
+      min-height: 148px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .memo-big .w-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffd966;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .memo-big .w-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 6px rgba(0,0,0,.4);
+    }
+
+    .memo-big .w-date {
+      font-size: 13px;
+      opacity: .8;
+      color: #fff;
+    }
+    .memo-big,
+    .small-glass {
+      border-radius: 22px;
+      transition: transform .15s;
+    }
+    .memo-big:active,
+    .small-glass:active {
+      transform: scale(.97);
+    }
+    .small-glass {
+      background: rgba(255, 255, 255, .18);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 20px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 68px;
+      cursor: pointer;
+    }
+
+    .small-glass .w-header {
+      font-size: 11px;
+      font-weight: 600;
+      opacity: .85;
+    }
+
+    .small-glass .w-body {
+      font-size: 26px;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .cal-widget { color: #ff8a8a; }
+    .photos-widget { color: #a8d8f0; }
+
+    /* 第二排右：Google + Safari */
+    .row-two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-left: calc(50% + 7px);
+      margin-bottom: 18px;
+    }
+
+    .row-two .small-glass {
+      min-height: 68px;
+    }
+
+    /* 第三排：4 个圆角图标 */
+    .icon-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .app-icon {
+      text-align: center;
+      cursor: pointer;
+    }
+
+.app-icon .icon-box {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 6px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  font-weight: 700;
+  background: rgba(255,255,255,.2);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,.18);
+  overflow: hidden;
+  color: #fff;
+  transition: transform .15s;
+}
+
+.app-icon:active .icon-box {
+  transform: scale(.9);
+}
+    .app-icon .icon-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .app-icon span {
+      font-size: 11px;
+      color: #fff;
+      font-weight: 500;
+      text-shadow: 0 1px 4px rgba(0,0,0,.6);
+    }
+
+    /* Dock 栏 */
+  .dock {
+  position: absolute;
+  bottom: 22px;
+  left: 14px;
+  right: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  padding: 12px 16px;
+  border-radius: 34px;
+  background: rgba(255,255,255,.16);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(255,255,255,.14);
+}
+.dock-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  background: rgba(255, 255, 255, .25);
+  cursor: pointer;
+  color: #fff;
+  overflow: hidden;
+  transition: transform .15s;
+}
+
+.dock-icon:active {
+  transform: scale(.9);
+}
+    .dock-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* 弹窗 */
+    .app-modal {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 30, 60, .92);
+      backdrop-filter: blur(20px);
+    padding: 10px 24px 24px;
+      display: none;
+      z-index: 10;
+      overflow-y: auto;
+    }
+
+    .app-modal.show { display: block; }
+
+    .app-modal h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      color: #a8d8f0;
+    }
+
+    .app-modal p {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #c8e0f0;
+      margin-bottom: 8px;
+    }
+
+    .app-modal .song-item {
+      padding: 14px 16px;
+      background: rgba(168, 216, 240, .1);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      border-left: 3px solid #7ec8e3;
+    }
+
+    .app-modal .song-item.active {
+      background: rgba(168, 216, 240, .25);
+      border-left-color: #a8d8f0;
+    }
+
+   .app-modal.openIos .ios-page.photo-page,
+.photo-page {
+  background: #fff !important;
+}
+ /* 照片图片 */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 12px;
+}
+
+.photo-grid img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+    /* 音乐播放器 */
+    .music-player {
+      background: rgba(168, 216, 240, .12);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .music-player .cover {
+      width: 160px;
+      height: 160px;
+      border-radius: 20px;
+      margin: 0 auto 16px;
+      background: rgba(168, 216, 240, .2);
+      display: grid;
+      place-items: center;
+      font-size: 60px;
+      overflow: hidden;
+    }
+
+    .music-player .cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .music-player .song-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .music-player .song-artist {
+      font-size: 13px;
+      opacity: .7;
+      margin-bottom: 16px;
+    }
+
+    .music-player audio {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+ .app-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 60px 20px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.app-back {
+  background: none;
+  border: none;
+  color: #4da8e8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.app-topbar .app-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}/* 文件夹图标（外面看是 3 个小图叠在一起） */
+.folder-box {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 3px;
+  padding: 8px;
+  background: rgba(255, 255, 255, .25) !important;
+  backdrop-filter: blur(14px);
+}
+
+.folder-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.folder-box img:nth-child(1) { grid-column: 1; grid-row: 1; }
+.folder-box img:nth-child(2) { grid-column: 2; grid-row: 1; }
+.folder-box img:nth-child(3) { grid-column: 1; grid-row: 2; }
+
+
+
+
+
+
+/* 文件夹弹出面板（底部卡片版） */
+.folder-panel {
+  position: absolute;
+  inset: 0;
+  display: none;
+  z-index: 40;
+  background: rgba(0, 0, 0, .35);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 380px;
+}
+.folder-panel.show { display: flex; }
+#notificationBanner.show-banner { top: 50px !important; }
+.folder-card {
+  width: 300px;
+  background: rgba(255, 255, 255, .22);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, .25);
+  border-radius: 34px;
+  padding: 14px 18px 22px;
+  text-align: center;
+}
+.folder-card .folder-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 18px;
+  text-shadow: 0 1px 4px rgba(0,0,0,.4);
+}
+
+.folder-body {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.folder-app {
+  text-align: center;
+  cursor: pointer;
+}
+
+.folder-app .icon-box {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 6px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .2);
+  overflow: hidden;
+}
+
+.folder-app .icon-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.folder-app span {
+  font-size: 11px;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
+}
+.app-body {/* ===== 日历 App ===== */
+.cal-app {
+  color: #fff;
+}
+
+.cal-header {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  position: relative;
+}
+
+.cal-year {
+  color: #ff3b30;
+}
+
+.cal-nav {
+  margin-left: auto;
+  display: flex;
+  gap: 16px;
+}
+
+.cal-nav button {
+  background: none;
+  border: none;
+  color: #ff3b30;
+  font-size: 26px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 12px;
+  opacity: .5;
+  margin-bottom: 10px;
+}
+
+.cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  gap: 4px 0;
+}
+
+.cal-day {
+  padding: 10px 0;
+  font-size: 16px;
+  position: relative;
+  cursor: pointer;
+}
+
+.cal-day.other-month {
+  opacity: .25;
+}
+
+.cal-day.today {
+  background: #ff3b30;
+  color: #fff;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  line-height: 16px;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+.cal-day.selected {
+  background: rgba(255,255,255,.12);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+.cal-day .dot {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #a8d8f0;
+}
+
+.cal-events {
+  margin-top: 28px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  padding-top: 16px;
+}
+
+.cal-event-date {
+  font-size: 13px;
+  opacity: .6;
+  margin-bottom: 14px;
+}
+
+.cal-event-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.cal-event-bar {
+  width: 3px;
+  height: 40px;
+  background: #4da8e8;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.cal-event-title {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.cal-event-time {
+  font-size: 13px;
+  opacity: .5;
+}
+    padding: 20px 20px 40px;
+  padding-top: 60px !important;
+  overflow-y: auto;
+  height: calc(100% - 100px);
+}
+
+
+
+    @media (max-width: 430px) {
+      .phone { width: 100vw; height: 100vh; border-radius: 0; padding: 0; }
+      .screen { border-radius: 0; }
+    } 
+ /* ===== iOS 白色页面通用 ===== */
+.ios-page {
+  background: #fff;
+  color: #000;
+  min-height: 100%;
+  margin: 0;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.ios-h1 { font-size: 34px; font-weight: 700; margin-bottom: 20px; color:#000; }
+.ios-list { border-top: 1px solid #e5e5e5; }
+.ios-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 4px;
+  border-bottom: 1px solid #e5e5e5;
+}
+.ios-row-title { font-size: 17px; font-weight: 500; color:#000; }
+.ios-row-title.red { color: #ff3b30; }
+.ios-row-sub { font-size: 13px; color: #8e8e93; margin-top: 2px; }
+.ios-row-time { font-size: 14px; color: #8e8e93; flex-shrink:0; margin-left:8px; }
+
+/* ===== 信息头像 ===== */
+.msg-row { gap: 12px; align-items: center; }
+.msg-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  color: #fff; font-size: 16px; font-weight: 600;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.msg-avatar img { width:100%; height:100%; object-fit:cover; }
+
+/* Kakao 聊天行（气泡 + 头像） */
+.chat-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.chat-row.me {
+  flex-direction: row-reverse;
+}
+.chat-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 14px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+/* ===== 聊天气泡 ===== */
+.chat-page {
+  display: flex; flex-direction: column;
+  height: 100%;
+  margin: -70px -24px -24px;
+  background: #fff;
+}
+.chat-body {
+  flex: 1; overflow-y: auto;
+  padding: 20px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  background: #fff;
+}
+.chat-bubble {
+  max-width: 70%; padding: 8px 14px;
+  border-radius: 18px; font-size: 16px; line-height: 1.4;
+}
+.chat-bubble.them { background: #e5e5ea; color: #000; }
+.chat-bubble.me { background: #0b84ff; color: #fff; }
+.chat-bubble-wrap { display: flex; flex-direction: column; }
+.chat-bubble-wrap.me { align-items: flex-end; }
+.chat-bubble-wrap.them { align-items: flex-start; }
+.chat-day {
+  font-size: 11px; color: #8e8e93;
+  text-align: center; margin: 10px 0;
+  align-self: center;
+}
+.chat-input {
+  padding: 10px 16px 24px;
+  border-top: 1px solid #e5e5e5;
+  background: #fff;
+}
+.chat-input input {
+  width: 100%; padding: 10px 16px;
+  border-radius: 20px; border: 1px solid #d1d1d6;
+  font-size: 15px; outline: none;
+}
+
+/* ===== Kakao 聊天配色（浅灰蓝，参考真实 iOS Kakao） ===== */
+.kakao-page { background: #c8d3dd; }
+.kakao-page .chat-body { background: #c8d3dd; }
+.kakao-page .chat-bubble.me { background: #fee500; color: #000; }
+.kakao-page .chat-bubble.them { background: #fff; color: #000; }
+.kakao-page .chat-input {
+  background: #c8d3dd !important;
+  border-top: none !important;
+}
+/* ===== 白色页面里顶栏适配 ===== */
+.app-modal.openIos { background: #fff; }.app-modal.openIos:has(.photo-page) {
+  padding: 0 !important;
+}..app-modal.openIos.kakaoOpen {
+  padding: 0;
+  background: #c8d3dd;
+  height: 100%;
+  overflow: hidden;
+}
+.app-modal.openIos.kakaoOpen { background: #b2c7d9; }
+.app-modal.openIos.kakaoOpen .app-body {
+  background: #c8d3dd;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.app-modal.openIos .app-topbar {
+  background: #fff !important;
+  border-bottom-color: #e5e5e5 !important;
+  padding-top: 60px !important; 
+}
+.app-modal.openIos .app-back { color: #0b84ff; }
+.app-modal.openIos .app-title { color: #000; }
+/* ===== 隐藏滚动条（保留滚动功能） ===== */
+.app-modal,
+.app-body,
+.chat-body,
+.home-screen,
+.folder-panel,
+.ios-page,
+.chat-page {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.app-modal::-webkit-scrollbar,
+.app-body::-webkit-scrollbar,
+.chat-body::-webkit-scrollbar,
+.home-screen::-webkit-scrollbar,
+.folder-panel::-webkit-scrollbar,
+.ios-page::-webkit-scrollbar,
+.chat-page::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* Kakao 私聊页顶栏（和内容区同色，无缝） */
+.app-modal.openIos.kakaoOpen .app-topbar {
+  background: #c8d3dd !important;
+  border-bottom: none !important;
+  padding: 44px 20px 10px !important;
+}
+.app-modal.openIos.kakaoOpen .app-back,
+.app-modal.openIos.kakaoOpen .app-title {
+  color: #1a1a1a !important;
+}/* ===== Kakao 私聊页 强制铺满 ===== */
+.app-modal.openIos.kakaoOpen {
+  padding: 0 !important;
+  background: #c8d3dd !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.app-modal.openIos.kakaoOpen .app-topbar {
+  background: #c8d3dd !important;
+  border-bottom: none !important;
+  padding: 44px 20px 10px !important;
+}
+.app-modal.openIos.kakaoOpen .app-body {
+  background: #c8d3dd !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  height: calc(100% - 62px) !important;
+}
+.app-modal.openIos.kakaoOpen .chat-page {
+  margin: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.app-modal.openIos.kakaoOpen .chat-body {
+  margin: 0 !important;
+  padding: 16px !important;
+  width: 100% !important;
+  background: #c8d3dd !important;
+}
+.app-modal.openIos.kakaoOpen .chat-input {
+  background: #c8d3dd !important;
+  border-top: none !important;
+  padding: 12px 16px 30px !important;
+}
+/* ===== 照片页 iOS 风格 ===== */
+.app-modal.openIos:has(.photo-page) {
+  padding: 0 !important;
+  margin: 0 !important;
+  background: #fff !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.app-modal.openIos:has(.photo-page) .app-topbar {
+  display: none !important;
+}
+.app-modal.openIos:has(.photo-page) .app-body {
+  background: #fff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.photo-page {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, 'PingFang SC', sans-serif;
+  overflow: hidden;
+}
+
+.ph-statusbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+  flex-shrink: 0;
+}
+.ph-statusbar .icons { display: flex; align-items: center; gap: 6px; }
+
+.ph-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px 8px;
+  flex-shrink: 0;
+}
+.ph-nav .back {
+  color: #0b84ff;
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.ph-nav .title { font-size: 17px; font-weight: 600; color: #000; }
+.ph-nav .select { color: #0b84ff; font-size: 17px; font-weight: 500; }
+
+.ph-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.ph-scroll::-webkit-scrollbar { display: none; }
+
+.ph-head {
+  padding: 8px 16px 4px;
+}
+.ph-head .sub { font-size: 15px; color: #000; margin-bottom: 6px; }
+.ph-head h1 { font-size: 32px; font-weight: 700; margin-bottom: 4px; color: #000; }
+.ph-head .count { font-size: 13px; color: #8e8e93; margin-bottom: 14px; }
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+.photo-grid img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+}
+
+/* 照片页底部 tabbar */
+.ph-tabbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 8px 8px 22px;
+  background: #fff;
+  border-top: 1px solid #e5e5e5;
+  flex-shrink: 0;
+  color: #8e8e93;
+}
+.ph-tabbar .active { color: #0b84ff; }
+/* 备忘录页 白底 */
+.app-modal.openIos:has(.memo-page),
+.app-modal.openIos:has(.memo-page) .app-topbar,
+.app-modal.openIos:has(.memo-page) .app-body {
+  background: #f2f2f7 !important;
+}
+.app-modal.openIos:has(.memo-page) .app-topbar {
+  border-bottom: 1px solid #e5e5e5 !important;
+}
+.app-modal.openIos:has(.memo-page) .app-back,
+.app-modal.openIos:has(.memo-page) .app-title {
+  color: #0b84ff !important;
+}
+
+/* ===== Instagram 黑色主题（iOS 风格） ===== */
+.app-modal.openIos:has(.insta-page) {
+  padding: 0 !important;
+  background: #000 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.app-modal.openIos:has(.insta-page) .app-topbar {
+  display: none !important;
+}
+.app-modal.openIos:has(.insta-page) .app-body {
+  background: #000 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.insta-page {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, 'PingFang SC', sans-serif;
+  overflow: hidden;
+}
+
+.insta-statusbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+}
+.insta-statusbar .icons { display: flex; align-items: center; gap: 6px; }
+
+.insta-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 10px;
+  flex-shrink: 0;
+}
+.insta-logo {
+  font-family: 'Snell Roundhand', 'Brush Script MT', cursive;
+  font-size: 30px;
+  color: #fff;
+  line-height: 1;
+}
+.insta-top-icons { display: flex; align-items: center; gap: 22px; }
+
+.insta-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.insta-scroll::-webkit-scrollbar { display: none; }
+
+.insta-stories {
+  display: flex;
+  gap: 16px;
+  padding: 6px 16px 14px;
+  overflow-x: auto;
+  border-bottom: 1px solid #262626;
+  scrollbar-width: none;
+}
+.insta-stories::-webkit-scrollbar { display: none; }
+.insta-story { text-align: center; flex-shrink: 0; width: 74px; }
+.insta-story .ring {
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  padding: 2.5px;
+  background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
+  margin: 0 auto;
+}
+.insta-story .ring.mine {
+  background: #262626;
+  position: relative;
+}
+.insta-story .ring.mine::after {
+  content: '+';
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 22px; height: 22px;
+  background: #0095f6;
+  border: 2px solid #000;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 15px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: 400;
+}
+.insta-story .ring img {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  border: 2px solid #000;
+  object-fit: cover;
+  display: block;
+}
+.insta-story span {
+  display: block;
+  font-size: 11px;
+  color: #fff;
+  margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.insta-post { border-bottom: 1px solid #262626; padding-bottom: 4px; }
+.insta-post-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+}
+.insta-post-head img.avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #333;
+}
+.insta-post-head .uname { font-size: 14px; font-weight: 600; color: #fff; flex: 1; }
+.insta-post-head .dots { color: #fff; font-size: 20px; line-height: 1; }
+.insta-post-img { width: 100%; display: block; background: #111; }
+
+.insta-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 14px 4px;
+}
+.insta-actions .spacer { flex: 1; }
+.insta-actions svg { display: block; }
+
+.insta-likes { font-size: 14px; font-weight: 600; padding: 2px 14px; color: #fff; }
+.insta-caption { font-size: 14px; padding: 4px 14px 6px; color: #fff; }
+.insta-caption .uname { font-weight: 600; margin-right: 4px; }
+.insta-time { font-size: 11px; color: #8e8e93; padding: 0 14px 10px; }
+
+.insta-tabbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px 8px 24px;
+  background: #000;
+  border-top: 1px solid #262626;
+  flex-shrink: 0;
+}
+.insta-tabbar svg { display: block; }
+/* ===== Weverse 纯正 iOS 原生风格 ===== */
+.app-modal.openIos:has(.weverse-page) {
+  padding: 0 !important;
+  background: #fff !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.app-modal.openIos:has(.weverse-page) .app-topbar {
+  display: none !important;
+}
+.app-modal.openIos:has(.weverse-page) .app-body {
+  background: #fff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.weverse-page {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, 'PingFang SC', sans-serif;
+  overflow: hidden;
+}
+
+/* 状态栏 */
+.wv-statusbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+  flex-shrink: 0;
+}
+.wv-statusbar .icons { display: flex; align-items: center; gap: 6px; }
+
+/* 顶栏 */
+.wv-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px 10px;
+  flex-shrink: 0;
+}
+.wv-nav .back {
+  color: #0b84ff; font-size: 17px; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; gap: 2px;
+}
+.wv-nav .title-wrap { text-align: center; }
+.wv-nav .title { font-size: 17px; font-weight: 700; color: #000; }
+.wv-nav .subtitle {
+  font-size: 12px; color: #8e8e93; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+}
+.wv-nav .share { color: #000; cursor: pointer; }
+
+/* 作者信息 */
+.wv-author {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px 10px;
+  flex-shrink: 0;
+}
+.wv-author img {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #f2f2f7;
+}
+.wv-author .info { flex: 1; }
+.wv-author .name-row {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 15px; font-weight: 700; color: #000;
+}
+.wv-author .time { font-size: 12px; color: #8e8e93; margin-top: 2px; }
+.wv-author .more { color: #8e8e93; font-size: 20px; line-height: 1; }
+
+/* 查看翻译 */
+.wv-translate {
+  padding: 0 16px 12px;
+  flex-shrink: 0;
+}
+.wv-translate span {
+  font-size: 13px; color: #666;
+  border-bottom: 1px solid #666;
+  padding-bottom: 2px;
+}
+
+/* 图片区：带圆角的独立卡片 */
+.wv-media {
+  padding: 0 16px 12px;
+  width: 100%;
+}
+.wv-media img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+/* 底部工具栏（浅灰毛玻璃） */
+.wv-toolbar {
+  background: #f9f9f9;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #000;
+  flex-shrink: 0;
+  border-top: 1px solid #eee;
+}
+.wv-toolbar .left { display: flex; gap: 20px; }
+.wv-toolbar svg { stroke: #000; }
+.wv-toolbar .arrow {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: #e5e5ea;
+  display: grid; place-items: center;
+}
+
+/* 底部评论栏 */
+.wv-commentbar {
+  background: #fff;
+  padding: 10px 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid #eee;
+  flex-shrink: 0;
+}
+.wv-commentbar .input {
+  flex: 1;
+  background: #f2f2f7;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #8e8e93;
+}
+
+/* 帖子分割线 */
+.wv-post-divider {
+  height: 1px;
+  background: #f2f2f7;
+  margin: 4px 16px;
+}
+
+/* ============ FaceTime ============ */
+.app-modal.openIos:has(.ft-page) {
+  padding: 0 !important;
+  background: #fff !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.app-modal.openIos:has(.ft-page) .app-topbar { display: none !important; }
+.app-modal.openIos:has(.ft-page) .app-body {
+  background: #fff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.ft-page {
+  position: absolute; inset: 0;
+  background: #fff; color: #000;
+  display: flex; flex-direction: column;
+  font-family: -apple-system, 'PingFang SC', sans-serif;
+  overflow: hidden;
+}
+.ft-statusbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px 4px;
+  font-size: 14px; font-weight: 600; color: #000;
+  flex-shrink: 0;
+}
+.ft-statusbar .icons { display: flex; align-items: center; gap: 6px; }
+.ft-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 16px 10px; flex-shrink: 0;
+}
+.ft-nav .back {
+  color: #0b84ff; font-size: 17px; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; gap: 2px;
+}
+.ft-nav .title { font-size: 17px; font-weight: 600; color: #000; }
+.ft-nav .add { color: #0b84ff; font-size: 24px; line-height: 1; cursor: pointer; }
+.ft-scroll {
+  flex: 1; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.ft-scroll::-webkit-scrollbar { display: none; }
+.ft-h1 {
+  font-size: 34px; font-weight: 700; color: #000;
+  padding: 8px 16px 6px;
+}
+.ft-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px; border-bottom: 1px solid #e5e5e5;
+}
+.ft-row .avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: #0b84ff; color: #fff;
+  display: grid; place-items: center;
+  font-size: 16px; font-weight: 600; flex-shrink: 0;
+}
+.ft-row .info { flex: 1; }
+.ft-row .name { font-size: 17px; font-weight: 500; color: #000; }
+.ft-row .sub { font-size: 13px; color: #8e8e93; margin-top: 2px; }
+.ft-row .time { font-size: 14px; color: #8e8e93; flex-shrink: 0; }
+
+/* ============ 天气 ============ */
+.app-modal.openIos:has(.wt-page) {
+  padding: 0 !important;
+  background: #1c1c1e !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.app-modal.openIos:has(.wt-page) .app-topbar { display: none !important; }
+.app-modal.openIos:has(.wt-page) .app-body {
+  background: #1c1c1e !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.wt-page {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, #3a6ea5 0%, #1c1c1e 70%);
+  color: #fff;
+  display: flex; flex-direction: column;
+  font-family: -apple-system, 'PingFang SC', sans-serif;
+  overflow: hidden;
+}
+.wt-statusbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px 4px;
+  font-size: 14px; font-weight: 600; color: #fff;
+  flex-shrink: 0;
+}
+.wt-statusbar .icons { display: flex; align-items: center; gap: 6px; }
+.wt-scroll {
+  flex: 1; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 20px 16px 40px;
+}
+.wt-scroll::-webkit-scrollbar { display: none; }
+.wt-city {
+  font-size: 32px; font-weight: 300;
+  text-align: center; color: #fff;
+}
+.wt-temp {
+  font-size: 96px; font-weight: 100;
+  text-align: center; line-height: 1; margin: 6px 0 0;
+}
+.wt-cond {
+  font-size: 20px; font-weight: 400;
+  text-align: center; color: rgba(255,255,255,.85);
+}
+.wt-hl {
+  font-size: 16px; text-align: center;
+  color: rgba(255,255,255,.85); margin-top: 4px;
+}
+.wt-card {
+  margin-top: 24px;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+.wt-card .title {
+  font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,.7);
+  text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.wt-hours {
+  display: flex; justify-content: space-between; gap: 8px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.wt-hours::-webkit-scrollbar { display: none; }
+.wt-hour {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-size: 13px; color: rgba(255,255,255,.9);
+  flex-shrink: 0; min-width: 44px;
+}
+.wt-hour .icon { font-size: 18px; }
+.wt-hour .t { font-size: 15px; font-weight: 500; }
+.wt-day-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid rgba(255,255,255,.12);
+  font-size: 15px;
+}
+.wt-day-row:first-of-type { border-top: none; }
+.wt-day-row .day { width: 40px; color: rgba(255,255,255,.9); }
+.wt-day-row .ic { font-size: 18px; width: 26px; text-align: center; }
+.wt-day-row .lo { width: 36px; text-align: right; color: rgba(255,255,255,.6); }
+.wt-day-row .bar {
+  flex: 1; height: 4px; border-radius: 2px;
+  background: linear-gradient(90deg,#5ac8fa,#ffcc00);
+  position: relative;
+}
+.wt-day-row .hi { width: 36px; text-align: right; color: #fff; font-weight: 500; }
+
+/* ============ Naver ============ */
+.app-modal.openIos:has(.nv-page) {
+  padding: 0 !important;
+  background: #fff !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.app-modal.openIos:has(.nv-page) .app-topbar { display: none !important; }
+.app-modal.openIos:has(.nv-page) .app-body {
+  background: #fff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.nv-page {
+  position: absolute; inset: 0;
+  background: #fff; color: #000;
+  display: flex; flex-direction: column;
+  font-family: -apple-system, 'PingFang SC', sans-serif;
+  overflow: hidden;
+}
+.nv-statusbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px 4px;
+  font-size: 14px; font-weight: 600; color: #000;
+  flex-shrink: 0;
+}
+.nv-statusbar .icons { display: flex; align-items: center; gap: 6px; }
+.nv-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 16px 10px; flex-shrink: 0;
+}
+.nv-nav .back {
+  color: #0b84ff; font-size: 17px; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; gap: 2px;
+}
+.nv-logo {
+  font-size: 24px; font-weight: 800;
+  color: #03c75a; letter-spacing: -1px;
+}
+.nv-nav .icons { display: flex; gap: 16px; }
+.nv-scroll {
+  flex: 1; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.nv-scroll::-webkit-scrollbar { display: none; }
+.nv-search-wrap { padding: 4px 16px 14px; }
+.nv-search {
+  display: flex; align-items: center; gap: 8px;
+  background: #f2f2f7; border-radius: 12px;
+  padding: 10px 14px;
+  color: #8e8e93; font-size: 15px;
+}
+.nv-section-title {
+  font-size: 13px; font-weight: 600; color: #8e8e93;
+  padding: 6px 16px 8px;
+  text-transform: uppercase; letter-spacing: .3px;
+}
+.nv-news-row {
+  display: flex; gap: 12px; padding: 10px 16px;
+  border-bottom: 1px solid #f0f0f0; align-items: flex-start;
+}
+.nv-news-row .thumb {
+  width: 72px; height: 72px; border-radius: 10px;
+  background: #eee; object-fit: cover; flex-shrink: 0;
+}
+.nv-news-row .body { flex: 1; }
+.nv-news-row .title {
+  font-size: 15px; font-weight: 500; color: #000; line-height: 1.35;
+}
+.nv-news-row .src { font-size: 12px; color: #8e8e93; margin-top: 6px; }
+.nv-rank-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px; border-bottom: 1px solid #f0f0f0;
+  font-size: 15px;
+}
+.nv-rank-row .num { width: 22px; color: #03c75a; font-weight: 700; }
+.nv-rank-row .kw { flex: 1; color: #000; }
+.nv-rank-row .up { color: #ff3b30; font-size: 12px; }
+.nv-rank-row .down { color: #0b84ff; font-size: 12px; }
+
+/* ============ Google ============ */
+.app-modal.openIos:has(.gg-page) {
+  padding: 0 !important;
+  background: #fff !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.app-modal.openIos:has(.gg-page) .app-topbar { display: none !important; }
+.app-modal.openIos:has(.gg-page) .app-body {
+  background: #fff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.gg-page {
+  position: absolute; inset: 0;
+  background: #fff; color: #000;
+  display: flex; flex-direction: column;
+  font-family: -apple-system, 'PingFang SC', sans-serif;
+  overflow: hidden;
+}
+.gg-statusbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px 4px;
+  font-size: 14px; font-weight: 600; color: #000;
+  flex-shrink: 0;
+}
+.gg-statusbar .icons { display: flex; align-items: center; gap: 6px; }
+.gg-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 16px 10px; flex-shrink: 0;
+}
+.gg-nav .back {
+  color: #0b84ff; font-size: 17px; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; gap: 2px;
+}
+.gg-nav .avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #4285F4; color: #fff;
+  display: grid; place-items: center;
+  font-size: 14px; font-weight: 700;
+}
+.gg-scroll {
+  flex: 1; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.gg-scroll::-webkit-scrollbar { display: none; }
+.gg-hero {
+  text-align: center; margin: 20px 0 26px;
+  font-size: 52px; font-weight: 600; letter-spacing: -2px;
+}
+.gg-search {
+  margin: 0 16px 24px;
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid #d1d1d6; border-radius: 26px;
+  padding: 12px 18px;
+  font-size: 15px; color: #8e8e93;
+}
+.gg-shortcuts {
+  display: flex; justify-content: space-around;
+  padding: 0 12px 22px;
+}
+.gg-shortcut {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-size: 12px; color: #333;
+}
+.gg-shortcut .ico {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: #f2f2f7;
+  display: grid; place-items: center;
+  color: #4285F4; font-size: 22px;
+}
+.gg-recent-title {
+  font-size: 13px; font-weight: 600; color: #8e8e93;
+  padding: 6px 16px 4px;
+  text-transform: uppercase; letter-spacing: .3px;
+}
+.gg-recent-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 15px; color: #000;
+}
+.gg-recent-row .clock { color: #8e8e93; }
+
+/* ===== 老 App 通用状态栏 + nav（删除全局状态栏后的替代） ===== */
+.ios-statusbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+  flex-shrink: 0;
+}
+.ios-statusbar .icons { display: flex; align-items: center; gap: 6px; }
+
+.ios-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px 10px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+.ios-nav .back {
+  color: #0b84ff;
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.ios-nav .title { font-size: 17px; font-weight: 600; color: #000; }
+.ios-nav .right { width: 44px; }
+
+.ios-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.ios-scroll::-webkit-scrollbar { display: none; }
+
+/* 老 App 打开时隐藏通用顶栏 + 铺满 */
+.app-modal.openIos:has(.ios-page) .app-topbar {
+  display: none !important;
+}
+.app-modal.openIos:has(.ios-page) {
+  padding: 0 !important;
+  background: #fff !important;
+  overflow: hidden !important;
+}
+.app-modal.openIos:has(.ios-page) .app-body {
+  background: #fff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+    .home-bar {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(255,255,255,.75);
+      cursor: pointer;
+      z-index: 6;
+    }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen" id="screen">
+            <div class="status-bar">
+        <span id="time">9:41</span>
+        <div style="display:flex; align-items:center; gap:6px; margin-top: -2px;">
+          <!-- 信号图标 -->
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#fff">
+            <rect x="0" y="8" width="3" height="6" rx="1" />
+            <rect x="5" y="5" width="3" height="9" rx="1" />
+            <rect x="10" y="2" width="3" height="12" rx="1" />
+            <rect x="15" y="0" width="3" height="14" rx="1" />
+          </svg>
+          
+          <!-- Wi-Fi 图标 -->
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 5 C 6 1, 12 1, 16 5" />
+            <path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5" />
+            <circle cx="9" cy="12" r="1.5" fill="#fff" stroke="none" />
+          </svg>
+
+          <!-- 电池图标 -->
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none">
+            <!-- 电池外框 -->
+            <rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#fff" stroke-width="1" />
+            <!-- 电池正极 -->
+            <path d="M24 4.5 V 8.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" />
+            <!-- 电池电量（白色填充） -->
+            <rect x="2" y="2" width="19" height="9" rx="1.5" fill="#fff" />
+          </svg>
+        </div>
+      </div>
+
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-icon-top">🔒</div>
+  <div class="lock-date" id="lockDate">11月29日 星期日</div>
+  <div class="lock-time" id="lockTime">12:00</div>
+  <div class="lock-hint">点击解锁</div>
+  <div class="lock-bottom">
+    <div class="lock-btn">🔦</div>
+    <div class="lock-btn">📷</div>
+  </div>
+</div>
+
+      <div class="home-screen" id="homeScreen">
+        <!-- 左上 2x2 备忘录 + 右上 日历 / 照片 -->
+            <div class="home-top">
+          <div class="memo-big" data-app="memo">
+            <div class="w-header">📝 备忘录</div>
+            <div class="w-title">MCD打歌</div>
+            <div class="w-date">2026. 10. 15.</div>
+          </div>
+
+<div class="small-glass cal-widget" data-app="calendar" id="homeCalendar">
+  <div class="w-header" id="homeCalWeek">星期五</div>
+  <div class="w-body" id="homeCalDay">16</div>
+</div>
+<div class="app-icon" id="folderBtn">
+  <div class="icon-box folder-box">
+    <img src="./assets/icons/google.png" alt="">
+    <img src="./assets/icons/naver.png" alt="">
+    <img src="./assets/icons/x.png" alt="">
+  </div>
+  <span>生活</span>
+</div>
+
+ 
+        <!-- 第二排右：Google + Safari -->
+        <!-- Weverse -->
+  <div class="app-icon" data-app="weverse">
+    <div class="icon-box"><img src="./assets/icons/weverse.png" alt="Weverse"></div>
+    <span>Weverse</span>
+  </div>
+
+  <!-- Instagram -->
+  <div class="app-icon" data-app="instagram">
+    <div class="icon-box"><img src="./assets/icons/instagram.png" alt="Instagram"></div>
+    <span>Instagram</span>
+  </div>
+
+  <!-- Safari -->
+  <div class="app-icon" data-app="safari">
+    <div class="icon-box"><img src="./assets/icons/safari.png" alt="Safari"></div>
+    <span>Safari</span>
+  </div>
+
+  <!-- 生活文件夹 -->
+  <div class="app-icon" data-app="photos">
+  <div class="icon-box"><img src="./assets/icons/photos.png" alt="照片"></div>
+  <span>照片</span>
+</div>
+</div><!-- 第二排图标：App Store / FaceTime / Weather / Camera -->
+<div class="icon-row">
+ <div class="app-icon" data-app="App Store">
+  <div class="icon-box"><img src="./assets/icons/App Store.png" alt="App Store"></div>
+  <span>App Store</span>
+</div>
+  <div class="app-icon" data-app="facetime">
+    <div class="icon-box"><img src="./assets/icons/facetime.png" alt="FaceTime"></div>
+    <span>FaceTime</span>
+  </div>
+  <div class="app-icon" data-app="weather">
+    <div class="icon-box"><img src="./assets/icons/weather.png" alt="天气"></div>
+    <span>天气</span>
+  </div>
+  <div class="app-icon" data-app="camera">
+    <div class="icon-box"><img src="./assets/icons/camera.png" alt="相机"></div>
+    <span>相机</span>
+  </div>
+</div>
+
+      <div class="home-bar" id="homeBar"></div>
+        <!-- Dock 栏 -->
+     <div class="dock">
+  <div class="dock-icon" data-app="phone"><img src="./assets/icons/phone.png" alt="电话"></div>
+  <div class="dock-icon" data-app="message"><img src="./assets/icons/message.png" alt="信息"></div>
+  <div class="dock-icon" data-app="kakao"><img src="./assets/icons/kakao.png" alt="KakaoTalk"></div>
+</div>
+      </div>
+
+<!-- 模拟消息通知横幅 -->
+<div id="notificationBanner" style="
+  position: absolute;
+  top: -100px; 
+  left: 10px; right: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1000;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+">
+  <img src="./assets/avatars/jiwoo.jpg" style="width: 40px; height: 40px; border-radius: 10px; object-fit: cover;">
+  <div style="flex: 1; color: #000;">
+    <div style="font-size: 14px; font-weight: 700; display: flex; justify-content: space-between;">
+      <span>KakaoTalk</span>
+      <span style="color: #8e8e93; font-weight: 400; font-size: 12px;">现在</span>
+    </div>
+  <div class="banner-text" style="font-size: 14px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">啾 ❤️：结束后一起去吃好吃的吧</div>
+  </div>
+</div>
+     <div class="app-modal" id="appModal">
+ 
+<div class="app-topbar" style="position: relative; justify-content: center;">
+  <button class="app-back" id="appBack" style="position: absolute; left: 20px;">‹ 首页</button>
+  <span class="app-title" id="appTitle" style="text-align: center;">应用</span>
+</div>
+  <div class="app-body" id="appBody"></div>
+</div>
+<!-- 生活文件夹面板（底部卡片版） -->
+<div class="folder-panel" id="folderPanel">
+  <div class="folder-card">
+    <div class="folder-title">生活</div>
+    <div class="folder-body">
+      <div class="folder-app" data-app="google">
+        <div class="icon-box"><img src="./assets/icons/google.png" alt="Google"></div>
+        <span>Google</span>
+      </div>
+      <div class="folder-app" data-app="naver">
+        <div class="icon-box"><img src="./assets/icons/naver.png" alt="Naver"></div>
+        <span>Naver</span>
+      </div>
+      <div class="folder-app" data-app="x">
+        <div class="icon-box"><img src="./assets/icons/x.png" alt="X"></div>
+        <span>X</span>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+
+  <script>
+    const screen = document.getElementById('screen');
+    const lockScreen = document.getElementById('lockScreen');
+    const appModal = document.getElementById('appModal');
+      const appBack = document.getElementById('appBack');
+const appTitle = document.getElementById('appTitle');
+const appBody = document.getElementById('appBody');
+
+        function updateTime() {
+      const now = new Date();
+      const time = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+      const date = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
+      
+      // 更新主页顶部的状态栏
+      document.getElementById('time').textContent = time;
+      
+      // 更新锁屏时间
+      document.getElementById('lockTime').textContent = time;
+      document.getElementById('lockDate').textContent = date;
+
+      // 核心：找到页面上所有带有 dynamic-time 标签的地方，让它们的时间一起跳动
+      document.querySelectorAll('.dynamic-time').forEach(function(el) {
+        el.textContent = time;
+      });
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+    lockScreen.addEventListener('click', () => {
+      screen.classList.add('unlocked');
+      
+      // ===== 第一条：第 4 秒弹出，展示 3 秒 =====
+      setTimeout(() => {
+        const banner = document.getElementById('notificationBanner');
+        if (banner) {
+          banner.querySelector('.banner-text').textContent = '啾 ❤️：待会结束一起去吃好吃的';
+          banner.classList.add('show-banner');
+          
+          // 3秒后收回第一条
+          setTimeout(() => {
+            banner.classList.remove('show-banner');
+            
+            // ---- 第一条收回后，立刻触发第二条 ----
+            setTimeout(() => {
+              banner.querySelector('.banner-text').textContent = '啾 ❤️：怎么没看到你';
+              banner.classList.add('show-banner');
+              
+              // 【关键】在这里塞入第二条聊天记录
+              if (window.kakaoChats && kakaoChats.miro) {
+                kakaoChats.miro.messages.push({
+                  from: 'them',
+                  text: '怎么没看到你',
+                  time: '刚刚'
+                });
+                refreshKakaoIfOpen(); 
+              }
+
+              // 第二条展示 2 秒后收回
+              setTimeout(() => banner.classList.remove('show-banner'), 2000);
+            }, 500);
+          }, 3000);
+          
+          banner.onclick = () => {
+            banner.classList.remove('show-banner');
+            document.querySelector('[data-app="kakao"]').click();
+          }
+        }
+
+        // 【同步聊天记录 1】第一条弹出时，塞入第一条消息
+        if (window.kakaoChats && kakaoChats.miro) {
+          kakaoChats.miro.messages.push({
+            from: 'them',
+            text: '待会结束一起去吃好吃的',
+            time: '刚刚'
+          });
+          refreshKakaoIfOpen();
+        }
+      }, 4000); 
+    });    // ===== 这是一个辅助刷新函数，放在解锁事件下面 =====
+    function refreshKakaoIfOpen() {
+      // 如果现在在 Kakao 聊天界面
+      const kakaoPage = document.querySelector('.kakao-page');
+      const titleText = document.getElementById('appTitle') ? document.getElementById('appTitle').textContent : '';
+      if (kakaoPage && titleText.includes('啾')) {
+        // 重新调用一次聊天渲染，把最新记录刷出来
+        openKakaoChat('miro'); 
+      }
+    }
+    const appData = {
+    memo: {
+  title: ' ',
+  content: `
+  <div class="ios-page" style="background:#f2f2f7;">
+    <div class="ios-statusbar">
+      <span class="dynamic-time" style="font-weight:600;">9:41</span>
+      <div class="icons">
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="#000"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#000" stroke="none"/></svg>
+        <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#000" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#000"/></svg>
+      </div>
+    </div>
+    <div class="ios-nav" style="border-bottom:none;background:#f2f2f7;">
+      <div class="back" onclick="document.getElementById('appBack').click();">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        首页
+      </div>
+      <div class="title">备忘录</div>
+      <div class="right"></div>
+    </div>
+    <div class="ios-scroll" style="background:#f2f2f7;">
+      <div style="padding:0 16px 100px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-size:34px;font-weight:700;color:#000;">备忘录</div>
+        </div>
+        <div style="font-size:13px;color:#8e8e93;margin-bottom:20px;">6个 备忘录</div>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;">
+          <div class="memo-item" data-memo="course" style="padding:14px 16px;border-bottom:1px solid #e5e5ea;cursor:pointer;">
+            <div style="font-size:17px;font-weight:600;color:#000;">MCD</div>
+            <div style="font-size:14px;color:#8e8e93;margin-top:4px;">2026. 10. 15.  MCD打歌</div>
+          </div>
+          <div class="memo-item" data-memo="note222" style="padding:14px 16px;border-bottom:1px solid #e5e5ea;cursor:pointer;">
+            <div style="font-size:17px;font-weight:600;color:#000;">录音</div>
+            <div style="font-size:14px;color:#8e8e93;margin-top:4px;">2026. 09. 18.  11点 录音</div>
+          </div>
+          <div class="memo-item" data-memo="birthday" style="padding:14px 16px;border-bottom:1px solid #e5e5ea;cursor:pointer;">
+            <div style="font-size:17px;font-weight:600;color:#000;">生日信</div>
+            <div style="font-size:14px;color:#8e8e93;margin-top:4px;">2026. 09. 04. 欧尼你好呀~~偶系哈蓝米</div>
+          </div>
+          <div class="memo-item" data-memo="comeback" style="padding:14px 16px;border-bottom:1px solid #e5e5ea;cursor:pointer;">
+            <div style="font-size:17px;font-weight:600;color:#000;">复制粘贴</div>
+            <div style="font-size:14px;color:#8e8e93;margin-top:4px;">2026. 08. 23. !</div>
+          </div>
+          <div class="memo-item" data-memo="jiwoo" style="padding:14px 16px;cursor:pointer;">
+            <div style="font-size:17px;font-weight:600;color:#000;">🎂</div>
+            <div style="font-size:14px;color:#8e8e93;margin-top:4px;">2026. 01. 04. 🎉</div>
+          </div>
+          <div class="memo-item" data-memo="coder" style="padding:14px 16px;border-top:1px solid #e5e5ea;cursor:pointer;">
+            <div style="font-size:17px;font-weight:600;color:#000;">码农又有话说</div>
+            <div style="font-size:14px;color:#8e8e93;margin-top:4px;">2026. 01. 01. 碎碎念</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  `
+},
+  calendar: {
+  title: '📅 日历',
+  content: `
+    <div class="cal-app">
+      <div class="cal-header">
+        <span class="cal-year">2026</span>年<span class="cal-month">10</span>月
+        <div class="cal-nav">
+          <button id="calPrev">‹</button>
+          <button id="calNext">›</button>
+        </div>
+      </div>
+      <div class="cal-weekdays">
+        <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+      </div>
+      <div class="cal-days" id="calDays"></div>
+      <div class="cal-events" id="calEvents">
+        <p class="cal-event-date" id="calEventDate">10月15日，星期四</p>
+        <div class="cal-event-item">
+          <div class="cal-event-bar"></div>
+          <div>
+            <div class="cal-event-title" id="calEventTitle">MCD打歌</div>
+            <div class="cal-event-time">全天</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+},
+        photos: {
+   content: `
+          <div style="
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #fff;
+    color: #000;
+    padding: 0;
+    overflow-y: auto;
+    z-index: 99;
+  ">
+    
+    <!-- 固定不动的顶栏 -->
+    <div style="position: fixed; top: 0; left: 0; right: 0; display: flex; flex-direction: column; padding: 18px 20px 10px; background: #fff; z-index: 10;">
+      <!-- 状态栏 -->
+      <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; color: #000; width: 100%; padding: 0 8px;">
+       <span class="dynamic-time">1:30</span>
+        <div style="display:flex; align-items:center; gap:6px; margin-top: -2px;">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#000"><rect x="0" y="8" width="3" height="6" rx="1" /><rect x="5" y="5" width="3" height="9" rx="1" /><rect x="10" y="2" width="3" height="12" rx="1" /><rect x="15" y="0" width="3" height="14" rx="1" /></svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5" /><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5" /><circle cx="9" cy="12" r="1.5" fill="#000" stroke="none" /></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#000" stroke-width="1" /><path d="M24 4.5 V 8.5" stroke="#000" stroke-width="1.5" stroke-linecap="round" /><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#000" /></svg>
+        </div>
+      </div>
+      <!-- 首页返回 -->
+      <div onclick="document.getElementById('appBack').click();" style="display: flex; align-items: center; margin-top: 12px; cursor: pointer; width: fit-content; padding: 4px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <span style="color: #0b84ff; font-size: 17px; font-weight: 500;">首页</span>
+      </div>
+    </div>
+
+    <!-- 滚动区域 -->
+    <div style="padding: 110px 12px 40px;">
+      <p style="margin-bottom:8px;">ㅈㅇ♡ㅇㅎ</p>
+      <h1 style="font-size:32px;font-weight:700;margin-bottom:6px;">图库</h1>
+      <p style="font-size:13px;opacity:.6;margin-bottom:16px;">99张照片</p>
+      <div class="photo-grid" id="photoGrid"></div>
+      <p style="margin-top:12px;font-size:13px;color:#8e8e93;"></p>
+    </div>
+
+  </div>
+  `
+}, 
+google: {
+  title: ' ',
+  content: `
+    <div class="gg-page">
+      <div class="gg-statusbar">
+        <span class="dynamic-time" style="font-weight:600;">9:41</span>
+        <div class="icons">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#000"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#000" stroke="none"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#000" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#000"/></svg>
+        </div>
+      </div>
+      <div class="gg-nav">
+        <div class="back" onclick="document.getElementById('appBack').click();">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          首页
+        </div>
+        <div class="avatar">G</div>
+      </div>
+      <div class="gg-scroll">
+        <div class="gg-hero">
+          <span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span>
+        </div>
+        <div class="gg-search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          搜索或输入网址
+        </div>
+
+        <div class="gg-shortcuts">
+          <div class="gg-shortcut">
+            <div class="ico">🌐</div>
+            <span>Chrome</span>
+          </div>
+          <div class="gg-shortcut">
+            <div class="ico">▶️</div>
+            <span>YouTube</span>
+          </div>
+          <div class="gg-shortcut">
+            <div class="ico">✉️</div>
+            <span>Gmail</span>
+          </div>
+          <div class="gg-shortcut">
+            <div class="ico">🗺️</div>
+            <span>Maps</span>
+          </div>
+        </div>
+
+        <div class="gg-recent-title">近期检索</div>
+        <div class="gg-recent-row">
+          <svg class="clock" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          总想和女友亲亲这正常吗
+        </div>
+        <div class="gg-recent-row">
+          <svg class="clock" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          女朋友太可爱了怎么办
+        </div>
+        <div class="gg-recent-row">
+          <svg class="clock" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          哈图哈崔志宇
+        </div>
+        <div class="gg-recent-row">
+          <svg class="clock" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          给二十岁女朋友生日礼物推荐
+        </div>
+        <div class="gg-recent-row">
+          <svg class="clock" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          推荐给女朋友的生日礼物
+        </div>
+      </div>
+    </div>
+  `
+},
+
+safari: {
+  title: ' ',
+  content: `
+  <div class="ios-page" style="background:#fff;">
+    <div class="ios-statusbar">
+      <span class="dynamic-time" style="font-weight:600;">9:41</span>
+      <div class="icons">
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="#000"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#000" stroke="none"/></svg>
+        <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#000" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#000"/></svg>
+      </div>
+    </div>
+    <div class="ios-nav">
+      <div class="back" onclick="document.getElementById('appBack').click();">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        首页
+      </div>
+      <div class="title">YouTube</div>
+      <div class="right"></div>
+    </div>
+    <div class="ios-scroll">
+    <!-- 视频卡片 1 -->
+           <div class="yt-card" data-url="https://www.bilibili.com/video/BV11JHW6AEuT/?spm_id_from=333.1387.upload.video_card.click" style="border-bottom:1px solid #e5e5ea;cursor:pointer;">
+      <div style="position:relative;background:#000;">
+                <img src="./assets/avatars/cover1.jpg" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff0000;width:56px;height:40px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:20px;">▶</div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:16px;font-weight:600;line-height:1.4;">
+          【Hearts2Hearts】都到齐了吧？
+        </div>
+        <div style="font-size:13px;color:#8e8e93;margin-top:6px;">YouTube</div>
+      </div>
+    </div>
+    <!-- 视频卡片 2 -->
+    <div class="yt-card" data-url="https://www.bilibili.com/video/BV1jfa365EPB/?spm_id_from=333.1387.upload.video_card.click" style="border-bottom:1px solid #e5e5ea;cursor:pointer;">
+      <div style="position:relative;background:#000;">
+        <img src="./assets/avatars/cover2.jpg" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff0000;width:56px;height:40px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:20px;">▶</div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:16px;font-weight:600;line-height:1.4;">
+          【Hearts2Hearts】快点快点躲开 right
+        </div>
+        <div style="font-size:13px;color:#8e8e93;margin-top:6px;">YouTube</div>
+      </div>
+    </div>
+    <!-- 视频卡片 3 -->
+    <div class="yt-card" data-url="https://www.bilibili.com/video/BV1MYuG6rEMu/?spm_id_from=333.337.search-card.all.click" style="border-bottom:1px solid #e5e5ea;cursor:pointer;">
+      <div style="position:relative;background:#000;">
+        <img src="./assets/avatars/cover3.jpg" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff0000;width:56px;height:40px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:20px;">▶</div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:16px;font-weight:600;line-height:1.4;">
+          【黑长直真的很权威 | YUHA 翻唱《I love you 3000》
+        </div>
+        <div style="font-size:13px;color:#8e8e93;margin-top:6px;">YouTube</div>
+      </div>
+    </div>
+
+    <!-- 视频卡片 4 -->
+    <div class="yt-card" data-url="https://www.bilibili.com/video/BV1Euuy67EA1/?spm_id_from=333.1387.upload.video_card.click" style="border-bottom:1px solid #e5e5ea;cursor:pointer;">
+      <div style="position:relative;background:#000;">
+        <img src="./assets/avatars/cover4.jpg" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff0000;width:56px;height:40px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:20px;">▶</div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:16px;font-weight:600;line-height:1.4;">
+          【Hearts2Hearts】在星空下和 S2U 一起
+        </div>
+        <div style="font-size:13px;color:#8e8e93;margin-top:6px;">YouTube</div>
+      </div>
+    </div>
+
+    <!-- 视频卡片 5 -->
+    <div class="yt-card" data-url="https://www.bilibili.com/video/BV1ECu66BEJU?spm_id_from=333.788.videopod.sections" style="border-bottom:1px solid #e5e5ea;cursor:pointer;">
+      <div style="position:relative;background:#000;">
+        <img src="./assets/avatars/cover5.jpg" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff0000;width:56px;height:40px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:20px;">▶</div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:16px;font-weight:600;line-height:1.4;">
+          【Hearts2Hearts】R U ready?
+        </div>
+        <div style="font-size:13px;color:#8e8e93;margin-top:6px;">YouTube</div>
+      </div>
+    </div>
+
+    <!-- 视频卡片 6 -->
+    <div class="yt-card" data-url="https://www.bilibili.com/video/BV12pMu6oEgs/?spm_id_from=333.1387.upload.video_card.click" style="border-bottom:1px solid #e5e5ea;cursor:pointer;">
+      <div style="position:relative;background:#000;">
+        <img src="./assets/avatars/cover6.jpg" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff0000;width:56px;height:40px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:20px;">▶</div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:16px;font-weight:600;line-height:1.4;">
+          【Hearts2Hearts】啊 不要嘻嘻
+        </div>
+        <div style="font-size:13px;color:#8e8e93;margin-top:6px;">YouTube</div>
+      </div>
+    </div>
+
+    <!-- 视频卡片 7 -->
+    <div class="yt-card" data-url="https://www.bilibili.com/video/BV1KAge6vELL?spm_id_from=333.788.player.player_end_recommend&trackid=web_related_0.router-related-2589621-qhxck.1792206125354.908" style="border-bottom:1px solid #e5e5ea;cursor:pointer;">
+      <div style="position:relative;background:#000;">
+        <img src="./assets/avatars/cover7.jpg" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff0000;width:56px;height:40px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:20px;">▶</div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:16px;font-weight:600;line-height:1.4;">
+          【Hearts2Hearts】hate that i made you love me dc: @bianca_delapaz
+        </div>
+        <div style="font-size:13px;color:#8e8e93;margin-top:6px;">YouTube</div>
+      </div>
+    </div>
+
+    <!-- 视频卡片 8 -->
+    <div class="yt-card" data-url="https://www.bilibili.com/video/BV1sMreBgEMa/?spm_id_from=333.788.recommend_more_video.0&trackid=web_related_0.router-related-2589621-ftmm5.1792206249544.180" style="border-bottom:1px solid #e5e5ea;cursor:pointer;">
+      <div style="position:relative;background:#000;">
+        <img src="./assets/avatars/cover8.jpg" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff0000;width:56px;height:40px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:20px;">▶</div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:16px;font-weight:600;line-height:1.4;">
+          【Hearts2Hearts】都一起初雪 .ᐟ ͙ᐟ
+        </div>
+        <div style="font-size:13px;color:#8e8e93;margin-top:6px;">YouTube</div>
+      </div>
+    </div>
+
+    <!-- 视频卡片 9 -->
+    <div class="yt-card" data-url="https://www.bilibili.com/video/BV1eD7A62EWF/?spm_id_from=333.1387.upload.video_card.click" style="border-bottom:1px solid #e5e5ea;cursor:pointer;">
+      <div style="position:relative;background:#000;">
+        <img src="./assets/avatars/cover9.jpg" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff0000;width:56px;height:40px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:20px;">▶</div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:16px;font-weight:600;line-height:1.4;">
+          【Hearts2Hearts】spill the lemon ta-ta-tang
+        </div>
+        <div style="font-size:13px;color:#8e8e93;margin-top:6px;">YouTube</div>
+      </div>
+    </div>
+
+    <!-- 视频卡片 10 -->
+    <div class="yt-card" data-url="https://www.bilibili.com/video/BV11HfMBjEf1/?spm_id_from=333.788.recommend_more_video.-1&trackid=web_related_0.router-related-2589621-kz84p.1792206500519.411" style="border-bottom:1px solid #e5e5ea;cursor:pointer;">
+      <div style="position:relative;background:#000;">
+        <img src="./assets/avatars/cover10.jpg" style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff0000;width:56px;height:40px;border-radius:8px;display:grid;place-items:center;color:#fff;font-size:20px;">▶</div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:16px;font-weight:600;line-height:1.4;">
+          【Hearts2Hearts】Hearts2Hearts《Electric Shock》舞台彩排 (Original Song by f(x))
+        </div>
+        <div style="font-size:13px;color:#8e8e93;margin-top:6px;">YouTube</div>
+      </div>
+    </div>
+    </div>
+    <div style="background:#f2f2f7;padding:10px 16px 24px;border-top:1px solid #e5e5ea;flex-shrink:0;">
+      <div style="background:#fff;border-radius:10px;padding:10px 16px;text-align:center;font-size:15px;color:#8e8e93;">youtube.com</div>
+    </div>
+  </div>
+  `
+},
+
+weverse: {
+  title: ' ',
+  content: `
+    <div class="weverse-page">
+
+      <!-- 状态栏 -->
+      <div class="wv-statusbar">
+        <span class="dynamic-time" style="font-weight:600;">9:41</span>
+        <div class="icons">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#000"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#000" stroke="none"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#000" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#000"/></svg>
+        </div>
+      </div>
+
+      <!-- 顶栏 -->
+      <div class="wv-nav">
+        <div class="back" onclick="document.getElementById('appBack').click();">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          首页
+        </div>
+        <div class="title-wrap">
+          <div class="title">帖子</div>
+          <div class="subtitle">前往社区 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:2px;"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+        <div class="share">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5l6 6-6 6"/><path d="M19 11H9a4 4 0 0 0-4 4v4"/></svg>
+        </div>
+      </div>
+
+      <!-- 内容滚动区 -->
+      <div class="wv-scroll" style="flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;">
+        
+        <!-- 帖子 1 -->
+        <div>
+          <div class="wv-author">
+            <img src="./assets/avatars/yuha.jpg" alt="">
+            <div class="info">
+              <div class="name-row">
+                유하
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#0abab5"><path d="M12 2L14.8 4.5L18.5 4.2L19.8 7.7L23 9.8L21.5 13.2L22.5 16.9L19.1 18.5L17.1 21.7L13.6 20.6L10.3 22.2L7.8 19.4L4.1 18.7L3.5 15L1 12L3.1 8.8L2.7 5.1L6.3 4L8.6 1L12 2Z"/><path d="M8.5 12L10.5 14L15.5 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="time">10. 17. 09:42</div>
+            </div>
+            <div class="more">⋮</div>
+          </div>
+          <div class="wv-translate"><span>photo by 志宇欧尼</span></div>
+          <div class="wv-media"><img src="./assets/images/photo18.jpg" alt=""></div>
+          <div class="wv-toolbar">
+            <div class="left">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </div>
+            <div class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="wv-commentbar">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="#ff3b30" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <div class="input">请输入评论。</div>
+          </div>
+        </div>
+
+        <div class="wv-post-divider"></div>
+
+        <!-- 帖子 2 -->
+        <div>
+          <div class="wv-author">
+            <img src="./assets/avatars/hathuha.jpg" alt="">
+            <div class="info">
+              <div class="name-row">
+                哈图哈
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#0abab5"><path d="M12 2L14.8 4.5L18.5 4.2L19.8 7.7L23 9.8L21.5 13.2L22.5 16.9L19.1 18.5L17.1 21.7L13.6 20.6L10.3 22.2L7.8 19.4L4.1 18.7L3.5 15L1 12L3.1 8.8L2.7 5.1L6.3 4L8.6 1L12 2Z"/><path d="M8.5 12L10.5 14L15.5 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="time">10. 16. 22:15</div>
+            </div>
+            <div class="more">⋮</div>
+          </div>
+          <div class="wv-translate"><span>Blue Moon</span></div>
+          <div class="wv-media"><img src="./assets/images/photo8.jpg" alt=""></div>
+          <div class="wv-toolbar">
+            <div class="left">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </div>
+            <div class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="wv-commentbar">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="#ff3b30" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <div class="input">请输入评论。</div>
+          </div>
+        </div>
+
+        <div class="wv-post-divider"></div>
+
+        <!-- 帖子 3 -->
+        <div>
+          <div class="wv-author">
+            <img src="./assets/avatars/jiwoo.jpg" alt="">
+            <div class="info">
+              <div class="name-row">
+                지우
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#0abab5"><path d="M12 2L14.8 4.5L18.5 4.2L19.8 7.7L23 9.8L21.5 13.2L22.5 16.9L19.1 18.5L17.1 21.7L13.6 20.6L10.3 22.2L7.8 19.4L4.1 18.7L3.5 15L1 12L3.1 8.8L2.7 5.1L6.3 4L8.6 1L12 2Z"/><path d="M8.5 12L10.5 14L15.5 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="time">10. 15. 18:30</div>
+            </div>
+            <div class="more">⋮</div>
+          </div>
+          <div class="wv-translate"><span>小狗系我吖</span></div>
+          <div class="wv-media"><img src="./assets/images/photo9.jpg" alt=""></div>
+          <div class="wv-toolbar">
+            <div class="left">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </div>
+            <div class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+          </div>
+          <div class="wv-commentbar">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="#ff3b30" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <div class="input">请输入评论。</div>
+          </div>
+        </div>
+<div class="wv-post-divider"></div>
+<!-- 帖子 1: 9月23日 유하 -->
+<div>
+  <div class="wv-author">
+    <img src="./assets/avatars/yuha.jpg" alt="">
+    <div class="info">
+      <div class="name-row">
+        유하
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#0abab5"><path d="M12 2L14.8 4.5L18.5 4.2L19.8 7.7L23 9.8L21.5 13.2L22.5 16.9L19.1 18.5L17.1 21.7L13.6 20.6L10.3 22.2L7.8 19.4L4.1 18.7L3.5 15L1 12L3.1 8.8L2.7 5.1L6.3 4L8.6 1L12 2Z"/><path d="M8.5 12L10.5 14L15.5 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="time">09. 23. 14:20</div>
+    </div>
+    <div class="more">⋮</div>
+  </div>
+  <div class="wv-translate"><span>是我吗</span></div>
+  <div class="wv-media"><img src="./assets/images/photo13.jpg" alt=""></div>
+  <div class="wv-toolbar">
+    <div class="left">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="wv-commentbar">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="#ff3b30" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    <div class="input">请输入评论。</div>
+  </div>
+</div>
+
+<div class="wv-post-divider"></div>
+
+<!-- 帖子 2: 9月23日 지우 -->
+<div>
+  <div class="wv-author">
+    <img src="./assets/avatars/jiwoo.jpg" alt="">
+    <div class="info">
+      <div class="name-row">
+        지우
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#0abab5"><path d="M12 2L14.8 4.5L18.5 4.2L19.8 7.7L23 9.8L21.5 13.2L22.5 16.9L19.1 18.5L17.1 21.7L13.6 20.6L10.3 22.2L7.8 19.4L4.1 18.7L3.5 15L1 12L3.1 8.8L2.7 5.1L6.3 4L8.6 1L12 2Z"/><path d="M8.5 12L10.5 14L15.5 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="time">09. 23. 21:05</div>
+    </div>
+    <div class="more">⋮</div>
+  </div>
+  <div class="wv-translate"><span>抱一下嘛</span></div>
+  <div class="wv-media"><img src="./assets/images/photo12.jpg" alt=""></div>
+  <div class="wv-toolbar">
+    <div class="left">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="wv-commentbar">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="#ff3b30" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    <div class="input">请输入评论。</div>
+  </div>
+</div>
+
+<div class="wv-post-divider"></div>
+
+<!-- 帖子 3: 8月17日 지우 -->
+<div>
+  <div class="wv-author">
+    <img src="./assets/avatars/jiwoo.jpg" alt="">
+    <div class="info">
+      <div class="name-row">
+        지우
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#0abab5"><path d="M12 2L14.8 4.5L18.5 4.2L19.8 7.7L23 9.8L21.5 13.2L22.5 16.9L19.1 18.5L17.1 21.7L13.6 20.6L10.3 22.2L7.8 19.4L4.1 18.7L3.5 15L1 12L3.1 8.8L2.7 5.1L6.3 4L8.6 1L12 2Z"/><path d="M8.5 12L10.5 14L15.5 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="time">08. 17. 18:30</div>
+    </div>
+    <div class="more">⋮</div>
+  </div>
+  <div class="wv-translate"><span>副驾空位等待有缘之人。</span></div>
+  <div class="wv-media"><img src="./assets/images/photo11.jpg" alt=""></div>
+  <div class="wv-toolbar">
+    <div class="left">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="wv-commentbar">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="#ff3b30" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    <div class="input">请输入评论。</div>
+  </div>
+</div>
+
+<div class="wv-post-divider"></div>
+
+<!-- 帖子 4: 8月12日 유하 -->
+<div>
+  <div class="wv-author">
+    <img src="./assets/avatars/yuha.jpg" alt="">
+    <div class="info">
+      <div class="name-row">
+        유하
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#0abab5"><path d="M12 2L14.8 4.5L18.5 4.2L19.8 7.7L23 9.8L21.5 13.2L22.5 16.9L19.1 18.5L17.1 21.7L13.6 20.6L10.3 22.2L7.8 19.4L4.1 18.7L3.5 15L1 12L3.1 8.8L2.7 5.1L6.3 4L8.6 1L12 2Z"/><path d="M8.5 12L10.5 14L15.5 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="time">08. 12. 15:45</div>
+    </div>
+    <div class="more">⋮</div>
+  </div>
+  <div class="wv-translate"><span>有缘之人</span></div>
+  <div class="wv-media"><img src="./assets/images/photo14.jpg" alt=""></div>
+  <div class="wv-toolbar">
+    <div class="left">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="wv-commentbar">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="#ff3b30" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    <div class="input">请输入评论。</div>
+  </div>
+</div>
+<div class="wv-post-divider"></div>
+
+<!-- 新增帖子 1: 유하 08.09 -->
+<div>
+  <div class="wv-author">
+    <img src="./assets/avatars/yuha.jpg" alt="">
+    <div class="info">
+      <div class="name-row">
+        유하
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#0abab5"><path d="M12 2L14.8 4.5L18.5 4.2L19.8 7.7L23 9.8L21.5 13.2L22.5 16.9L19.1 18.5L17.1 21.7L13.6 20.6L10.3 22.2L7.8 19.4L4.1 18.7L3.5 15L1 12L3.1 8.8L2.7 5.1L6.3 4L8.6 1L12 2Z"/><path d="M8.5 12L10.5 14L15.5 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="time">08. 09. 21:14</div>
+    </div>
+    <div class="more">⋮</div>
+  </div>
+  <div class="wv-translate"><span>嗷呜🐯</span></div>
+  <div class="wv-media"><img src="./assets/images/photo24.jpg" alt=""></div>
+  <div class="wv-toolbar">
+    <div class="left">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="wv-commentbar">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="#ff3b30" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    <div class="input">请输入评论。</div>
+  </div>
+</div>
+
+<div class="wv-post-divider"></div>
+
+<!-- 新增帖子 2: 지우 08.05 -->
+<div>
+  <div class="wv-author">
+    <img src="./assets/avatars/jiwoo.jpg" alt="">
+    <div class="info">
+      <div class="name-row">
+        지우
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#0abab5"><path d="M12 2L14.8 4.5L18.5 4.2L19.8 7.7L23 9.8L21.5 13.2L22.5 16.9L19.1 18.5L17.1 21.7L13.6 20.6L10.3 22.2L7.8 19.4L4.1 18.7L3.5 15L1 12L3.1 8.8L2.7 5.1L6.3 4L8.6 1L12 2Z"/><path d="M8.5 12L10.5 14L15.5 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="time">08. 05. 23:47</div>
+    </div>
+    <div class="more">⋮</div>
+  </div>
+  <div class="wv-translate"><span>🍓</span></div>
+  <div class="wv-media"><img src="./assets/images/photo22.jpg" alt=""></div>
+  <div class="wv-toolbar">
+    <div class="left">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="wv-commentbar">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="#ff3b30" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    <div class="input">请输入评论。</div>
+  </div>
+</div>
+
+<div class="wv-post-divider"></div>
+
+<!-- 新增帖子 3: 지우 06.22 -->
+<div>
+  <div class="wv-author">
+    <img src="./assets/avatars/jiwoo.jpg" alt="">
+    <div class="info">
+      <div class="name-row">
+        지우
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#0abab5"><path d="M12 2L14.8 4.5L18.5 4.2L19.8 7.7L23 9.8L21.5 13.2L22.5 16.9L19.1 18.5L17.1 21.7L13.6 20.6L10.3 22.2L7.8 19.4L4.1 18.7L3.5 15L1 12L3.1 8.8L2.7 5.1L6.3 4L8.6 1L12 2Z"/><path d="M8.5 12L10.5 14L15.5 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="time">06. 22. 21:14</div>
+    </div>
+    <div class="more">⋮</div>
+  </div>
+  <div class="wv-translate"><span>capture time ​​​</span></div>
+  <div class="wv-media"><img src="./assets/images/photo21.jpg" alt=""></div>
+  <div class="wv-toolbar">
+    <div class="left">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+  </div>
+  <div class="wv-commentbar">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="#ff3b30" stroke="#ff3b30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    <div class="input">请输入评论。</div>
+  </div>
+</div>
+  `
+},
+ instagram: {
+  title: ' ',
+  content: `
+    <div class="insta-page">
+
+      <!-- 状态栏 -->
+      <div class="insta-statusbar">
+        <span class="dynamic-time" style="font-weight:600;">9:41</span>
+        <div class="icons">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#fff">
+            <rect x="0" y="8" width="3" height="6" rx="1"/>
+            <rect x="5" y="5" width="3" height="9" rx="1"/>
+            <rect x="10" y="2" width="3" height="12" rx="1"/>
+            <rect x="15" y="0" width="3" height="14" rx="1"/>
+          </svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 5 C 6 1, 12 1, 16 5"/>
+            <path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/>
+            <circle cx="9" cy="12" r="1.5" fill="#fff" stroke="none"/>
+          </svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none">
+            <rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#fff" stroke-width="1"/>
+            <path d="M24 4.5 V 8.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="2" y="2" width="19" height="9" rx="1.5" fill="#fff"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 顶栏 -->
+      <div class="insta-topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <span onclick="document.getElementById('appBack').click();" style="color:#0095f6;font-size:16px;cursor:pointer;font-weight:500;">‹ 首页</span>
+          <div class="insta-logo">Instagram</div>
+        </div>
+        <div class="insta-top-icons">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 滚动内容 -->
+          <!-- 滚动内容 -->
+      <div class="insta-scroll">
+
+        <div class="insta-stories">
+          <div class="insta-story" data-story="me">
+            <div class="ring mine"><img src="./assets/images/photo20.jpg" alt=""></div>
+            <span>我的故事</span>
+          </div>
+          <div class="insta-story">
+            <div class="ring"><img src="./assets/images/photo23.jpg" alt=""></div>
+            <span>Hearts2Hearts</span>
+          </div>
+          <div class="insta-story" data-story="jiwoo">
+            <div class="ring"><img src="./assets/images/photo9.jpg" alt=""></div>
+            <span>🍓𝑱𝒊𝒘𝒐𝒐</span>
+          </div>
+        </div>
+
+        <div class="insta-posts" id="instaPosts">
+          
+          <div class="insta-post">
+            <div class="insta-post-head">
+              <img class="avatar" src="./assets/images/photo9.jpg" alt="">
+              <span class="uname">🍓𝑱𝒊𝒘𝒐𝒐</span>
+              <span class="dots">⋯</span>
+            </div>
+            <img class="insta-post-img" src="./assets/images/photo4.jpg" alt="">
+            <div class="insta-actions">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span class="spacer"></span>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="insta-likes">11,525 次赞</div>
+            <div class="insta-caption"><span class="uname">好像有点喜欢你</span>❤️</div>
+            <div class="insta-time">2 小时前</div>
+          </div>
+
+          <div class="insta-post">
+            <div class="insta-post-head">
+              <img class="avatar" src="./assets/images/photo9.jpg" alt="">
+              <span class="uname">🍓𝑱𝒊𝒘𝒐𝒐</span>
+              <span class="dots">⋯</span>
+            </div>
+            <img class="insta-post-img" src="./assets/images/photo5.jpg" alt="">
+            <div class="insta-actions">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span class="spacer"></span>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="insta-likes">239,999 次赞</div>
+            <div class="insta-caption"><span class="uname"></span>我们</div>
+            <div class="insta-time">5 小时前</div>
+          </div>
+
+          <div class="insta-post">
+            <div class="insta-post-head">
+              <img class="avatar" src="./assets/images/photo9.jpg" alt="">
+              <span class="uname">🍓𝑱𝒊𝒘𝒐𝒐</span>
+              <span class="dots">⋯</span>
+            </div>
+            <img class="insta-post-img" src="./assets/images/photo6.jpg" alt="">
+            <div class="insta-actions">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span class="spacer"></span>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="insta-likes">1,314,520 次赞</div>
+            <div class="insta-caption"><span class="uname"></span>“想陪你一直一起生活下去”</div>
+            <div class="insta-time">1 天前</div>
+          </div>
+          <!-- 新增帖子 1 -->
+          <div class="insta-post">
+            <div class="insta-post-head">
+              <img class="avatar" src="./assets/images/photo9.jpg" alt="">
+              <span class="uname">🍓𝑱𝒊𝒘𝒐𝒐</span>
+              <span class="dots">⋯</span>
+            </div>
+            <img class="insta-post-img" src="./assets/images/photo16.jpg" alt="">
+            <div class="insta-actions">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span class="spacer"></span>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="insta-likes">212121 次赞</div>
+            <div class="insta-caption"><span class="uname"></span>好想你🫶🏻</div>
+            <div class="insta-time">3 天前</div>
+          </div>
+
+          <!-- 新增帖子 2 -->
+          <div class="insta-post">
+            <div class="insta-post-head">
+              <img class="avatar" src="./assets/images/photo9.jpg" alt="">
+              <span class="uname">🍓𝑱𝒊𝒘𝒐𝒐</span>
+              <span class="dots">⋯</span>
+            </div>
+            <img class="insta-post-img" src="./assets/images/photo17.jpg" alt="">
+            <div class="insta-actions">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span class="spacer"></span>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="insta-likes">1234567899 次赞</div>
+            <div class="insta-caption"><span class="uname"></span>一直以来都很感谢大家</div>
+            <div class="insta-time">5 天前</div>
+          </div>
+          <div class="insta-post">
+            <div class="insta-post-head">
+              <img class="avatar" src="./assets/images/photo9.jpg" alt="">
+              <span class="uname">🍓𝑱𝒊𝒘𝒐𝒐</span>
+              <span class="dots">⋯</span>
+            </div>
+            <img class="insta-post-img" src="./assets/images/photo7.jpg" alt="">
+            <div class="insta-actions">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span class="spacer"></span>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="insta-likes">21,212 次赞</div>
+            <div class="insta-caption"><span class="uname"></span>要健康长大</div>
+            <div class="insta-time">2 天前</div>
+          </div>
+          <!-- 圣诞帖子 25年12月25日 -->
+          <div class="insta-post">
+            <div class="insta-post-head">
+              <img class="avatar" src="./assets/images/photo9.jpg" alt="">
+              <span class="uname">🍓𝑱𝒊𝒘𝒐𝒐</span>
+              <span class="dots">⋯</span>
+            </div>
+            <img class="insta-post-img" src="./assets/images/photo25.jpg" alt="">
+            <div class="insta-actions">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span class="spacer"></span>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="insta-likes">88,888 次赞</div>
+            <div class="insta-caption"><span class="uname"></span>槲寄生下</div>
+            <div class="insta-time">2025 年 12 月 25 日</div>
+          </div>
+        </div> 
+      </div> 
+
+      <!-- 底部导航 -->
+      <div class="insta-tabbar">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"/>
+        </svg>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="4"/>
+          <line x1="3" y1="9" x2="21" y2="9"/>
+          <line x1="9" y1="3" x2="9" y2="9"/>
+          <polygon points="10 13 15 16 10 19 10 13" fill="#fff" stroke="none"/>
+        </svg>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 7h12l1 13H5L6 7z"/>
+          <path d="M9 7a3 3 0 0 1 6 0"/>
+        </svg>
+        <svg width="30" height="30" viewBox="0 0 30 30">
+          <defs>
+            <clipPath id="igAva"><circle cx="15" cy="15" r="13"/></clipPath>
+          </defs>
+          <image href="./assets/images/photo9.jpg" x="2" y="2" width="26" height="26" clip-path="url(#igAva)" preserveAspectRatio="xMidYMid slice"/>
+          <circle cx="15" cy="15" r="13.5" fill="none" stroke="#fff" stroke-width="1.5"/>
+        </svg>
+      </div>
+
+    </div>
+  `
+},
+x: {
+  title: ' ',
+  content: `
+    <div class="ios-page" style="background:#000;">
+      <!-- 状态栏 -->
+      <div class="ios-statusbar" style="color:#fff;">
+        <span class="dynamic-time" style="font-weight:600;">9:41</span>
+        <div class="icons">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#fff"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#fff" stroke="none"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#fff" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#fff"/></svg>
+        </div>
+      </div>
+
+      <!-- 导航栏 -->
+      <div class="ios-nav" style="border-bottom:1px solid #333; background:#000;">
+        <div class="back" onclick="document.getElementById('appBack').click();" style="color:#fff;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          首页
+        </div>
+        <div class="title" style="color:#fff;">X</div>
+        <div class="right"></div>
+      </div>
+
+      <!-- 内容列表 (Feed) -->
+      <div class="ios-scroll" style="background:#000; padding-bottom: 40px;">
+        
+        <!-- 推文 1 -->
+        <div style="display:flex; gap:12px; padding:16px; border-bottom:1px solid #333;">
+          <img src="./assets/avatars/yuha.jpg" style="width:44px; height:44px; border-radius:50%; object-fit:cover;">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:4px;">
+          <span style="color:#fff; font-weight:700; font-size:15px;">유하🎀</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#1d9bf0"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.918-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.336 2.25c-.416-.165-.866-.25-1.336-.25-2.21 0-3.918 1.79-3.918 4 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.46.757 2.755 1.91 3.485-.035.186-.055.385-.055.59 0 2.21 1.71 3.998 3.918 3.998.47 0 .92-.084 1.336-.25.52 1.332 1.828 2.25 3.336 2.25s2.816-.918 3.336-2.25c.416.166.866.25 1.336.25 2.21 0 3.918-1.79 3.918-4 0-.205-.02-.404-.055-.59 1.153-.73 1.91-2.025 1.91-3.485z"/><path fill="#fff" d="M10.5 15.5l-3-3 1.41-1.41L10.5 12.67l5.59-5.59L17.5 8.5l-7 7z"/></svg>
+            <span style="color:#71767b; font-size:14px;">@toramui_ · 2小时</span>
+            </div>
+            <div style="color:#fff; font-size:14px; margin-top:4px; line-height:1.4;">
+             “哈拉米来喽～！” ​​​🩵✨
+            </div>
+            <!-- 操作栏 -->
+            <div style="display:flex; justify-content:space-between; margin-top:12px; color:#71767b; max-width:300px;">
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>1.2K</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>4.5K</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>32K</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 推文 2 -->
+        <div style="display:flex; gap:12px; padding:16px; border-bottom:1px solid #333;">
+          <img src="./assets/avatars/jiwoo.jpg" style="width:44px; height:44px; border-radius:50%; object-fit:cover;">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="color:#fff; font-weight:700; font-size:15px;">지우🍓</span>
+           <span style="color:#71767b; font-size:14px;">@jjoojebi_ · 4小时</span>
+            </div>
+            <div style="color:#fff; font-size:14px; margin-top:4px; line-height:1.4;">
+             我又是你的第几顺位呢
+            </div>
+            <img src="./assets/images/photo10.jpg" style="width:100%; border-radius:16px; margin-top:10px;">
+            <!-- 操作栏 -->
+            <div style="display:flex; justify-content:space-between; margin-top:12px; color:#71767b; max-width:300px;">
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>842</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>2.1K</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>18K</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 推文 3 -->
+        <div style="display:flex; gap:12px; padding:16px; border-bottom:1px solid #333;">
+          <img src="./assets/avatars/hathuha.jpg" style="width:44px; height:44px; border-radius:50%; object-fit:cover;">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="color:#fff; font-weight:700; font-size:15px;">哈图哈</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#1d9bf0"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.918-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.336 2.25c-.416-.165-.866-.25-1.336-.25-2.21 0-3.918 1.79-3.918 4 0 .495.084.965.238 1.4-1.273.65-2.148 2.02-2.148 3.6 0 1.46.757 2.755 1.91 3.485-.035.186-.055.385-.055.59 0 2.21 1.71 3.998 3.918 3.998.47 0 .92-.084 1.336-.25.52 1.332 1.828 2.25 3.336 2.25s2.816-.918 3.336-2.25c.416.166.866.25 1.336.25 2.21 0 3.918-1.79 3.918-4 0-.205-.02-.404-.055-.59 1.153-.73 1.91-2.025 1.91-3.485z"/><path fill="#fff" d="M10.5 15.5l-3-3 1.41-1.41L10.5 12.67l5.59-5.59L17.5 8.5l-7 7z"/></svg>
+              <span style="color:#71767b; font-size:14px;">@hatuha_ · 6小时</span>
+            </div>
+            <div style="color:#fff; font-size:14px; margin-top:4px; line-height:1.4;">
+            你，成为我的同伴吧！ 
+            </div>
+            <img src="./assets/images/photo23.jpg" style="width:80%; border-radius:16px; margin-top:10px;">
+            <!-- 操作栏 -->
+            <div style="display:flex; justify-content:space-between; margin-top:12px; color:#71767b; max-width:300px;">
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>512</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>1.1K</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>8.5K</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 推文 4 -->
+        <div style="display:flex; gap:12px; padding:16px; border-bottom:1px solid #333;">
+          <img src="./assets/avatars/member1.jpg" style="width:44px; height:44px; border-radius:50%; object-fit:cover;">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="color:#fff; font-weight:700; font-size:15px;">多绚</span>
+              <span style="color:#71767b; font-size:14px;">@stella- · 8小时</span>
+            </div>
+            <div style="color:#fff; font-size:14px; margin-top:4px; line-height:1.4;">
+              今晚的月亮好圆呀🌕 大家抬头看看~
+            </div>
+            <!-- 操作栏 -->
+            <div style="display:flex; justify-content:space-between; margin-top:12px; color:#71767b; max-width:300px;">
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>233</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>450</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>3.2K</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 推文 5 -->
+        <div style="display:flex; gap:12px; padding:16px; border-bottom:1px solid #333;">
+          <img src="./assets/avatars/jiwoo.jpg" style="width:44px; height:44px; border-radius:50%; object-fit:cover;">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="color:#fff; font-weight:700; font-size:15px;">지우🍓</span>
+              <span style="color:#71767b; font-size:14px;">@jiwoo_  · 10小时</span>
+            </div>
+            <div style="color:#fff; font-size:14px; margin-top:4px; line-height:1.4;">
+              是兔岚咪😚            </div>
+            <img src="./assets/images/photo20.jpg" style="width:100%; border-radius:16px; margin-top:10px;">
+            <!-- 操作栏 -->
+            <div style="display:flex; justify-content:space-between; margin-top:12px; color:#71767b; max-width:300px;">
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>621</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>1.5K</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>12K</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 推文 6 -->
+        <div style="display:flex; gap:12px; padding:16px; border-bottom:1px solid #333;">
+          <img src="./assets/avatars/member5.jpg" style="width:44px; height:44px; border-radius:50%; object-fit:cover;">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:4px;">
+              <span style="color:#fff; font-weight:700; font-size:15px;">一安尼</span>
+              <span style="color:#71767b; font-size:14px;">@iannnnn-· 昨天</span>
+            </div>
+            <div style="color:#fff; font-size:14px; margin-top:4px; line-height:1.4;">
+              签售会真的太幸福了，大家都好可爱😭 谢谢你们来看我们！
+            </div>
+            <!-- 操作栏 -->
+            <div style="display:flex; justify-content:space-between; margin-top:12px; color:#71767b; max-width:300px;">
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>1.8K</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>5.2K</div>
+              <div style="display:flex; align-items:center; gap:4px; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>25K</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `
+},
+naver: {
+  title: ' ',
+  content: `
+    <div class="nv-page">
+      <div class="nv-statusbar">
+        <span class="dynamic-time" style="font-weight:600;">9:41</span>
+        <div class="icons">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#000"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#000" stroke="none"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#000" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#000"/></svg>
+        </div>
+      </div>
+      <div class="nv-nav">
+        <div class="back" onclick="document.getElementById('appBack').click();">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          首页
+        </div>
+        <div class="nv-logo">NAVER</div>
+        <div class="icons">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+      </div>
+      <div class="nv-scroll">
+        <div class="nv-search-wrap">
+          <div class="nv-search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            搜索或输入网址
+          </div>
+        </div>
+
+        <div class="nv-section-title">主要新闻</div>
+        <div class="nv-news-row">
+          <img class="thumb" src="./assets/images/photo23.jpg" alt="">
+          <div class="body">
+            <div class="title">Hearts2Hearts 新曲《ICONIC HEART》打歌舞台引发热议</div>
+            <div class="src">스포츠서울 · 2 小时前</div>
+          </div>
+        </div>
+        <div class="nv-news-row">
+          <img class="thumb" src="./assets/images/photo23.jpg" alt="">
+          <div class="body">
+            <div class="title">"回归在即" Hearts2Hearts 公开新专辑预告照</div>
+            <div class="src">뉴스1 · 4 小时前</div>
+          </div>
+        </div>
+        <div class="nv-news-row">
+          <img class="thumb" src="./assets/images/photo20.jpg" alt="">
+          <div class="body">
+            <div class="title">YUHA 钢琴弹唱《Fall In Love Alone 》获原唱点赞评论支持</div>
+            <div class="src">엑스포츠뉴스 · 5 小时前</div>
+          </div>
+        </div>
+
+        <div class="nv-section-title" style="margin-top:8px;">实时热搜</div>
+        <div class="nv-rank-row"><span class="num">1</span><span class="kw">Hearts2Hearts</span><span class="up">▲</span></div>
+        <div class="nv-rank-row"><span class="num">2</span><span class="kw">ICONIC HEART 打歌</span><span class="up">▲</span></div>
+        <div class="nv-rank-row"><span class="num">3</span><span class="kw">YUHA 翻唱</span><span class="down">▼</span></div>
+        <div class="nv-rank-row"><span class="num">4</span><span class="kw">MCD 出演名单</span><span class="up">▲</span></div>
+        <div class="nv-rank-row"><span class="num">5</span><span class="kw">出道 600 天</span><span class="up">▲</span></div>
+      </div>
+    </div>
+  `
+},
+phone: {
+  title: ' ',
+  content: `
+    <div class="ios-page">
+      <div class="ios-statusbar">
+        <span class="dynamic-time" style="font-weight:600;">9:41</span>
+        <div class="icons">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#000"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#000" stroke="none"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#000" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#000"/></svg>
+        </div>
+      </div>
+      <div class="ios-nav">
+        <div class="back" onclick="document.getElementById('appBack').click();">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          首页
+        </div>
+        <div class="title">电话</div>
+        <div class="right"></div>
+      </div>
+      <div class="ios-scroll">
+        <h1 class="ios-h1" style="padding:8px 16px 6px;">近期纪录</h1>
+        <div class="ios-list">
+          <div class="ios-row">
+            <div>
+              <div class="ios-row-title">❤️啾欧尼 ❤️</div>
+              <div class="ios-row-sub">已接听</div>
+            </div>
+            <div class="ios-row-time">下午21:10</div>
+          </div>
+          <div class="ios-row">
+            <div>
+              <div class="ios-row-title red">❤️啾欧尼 ❤️</div>
+              <div class="ios-row-sub">未接</div>
+            </div>
+            <div class="ios-row-time">下午21:01</div>
+          </div>
+          <div class="ios-row">
+            <div>
+              <div class="ios-row-title">❤️啾欧尼 ❤️</div>
+              <div class="ios-row-sub">已接听</div>
+            </div>
+            <div class="ios-row-time">下午18:20</div>
+          </div>
+          <div class="ios-row">
+            <div>
+              <div class="ios-row-title">妈妈</div>
+              <div class="ios-row-sub">已拨打</div>
+            </div>
+            <div class="ios-row-time">10/12</div>
+          </div>
+          <div class="ios-row">
+            <div>
+              <div class="ios-row-title">妈妈</div>
+              <div class="ios-row-sub">已拨打</div>
+            </div>
+            <div class="ios-row-time">10/11</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+},
+    message: {
+  title: ' ',
+  content: `
+    <div class="ios-page">
+      <div class="ios-statusbar">
+        <span class="dynamic-time" style="font-weight:600;">9:41</span>
+        <div class="icons">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#000"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#000" stroke="none"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#000" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#000"/></svg>
+        </div>
+      </div>
+      <div class="ios-nav">
+        <div class="back" onclick="document.getElementById('appBack').click();">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          首页
+        </div>
+        <div class="title">信息</div>
+        <div class="right"></div>
+      </div>
+      <div class="ios-scroll">
+        <h1 class="ios-h1" style="padding:8px 16px 6px;">信息</h1>
+        <div class="ios-list">
+          <div class="ios-row msg-row" data-chat="mom">
+            <div class="msg-avatar" style="background:#c98a6b;">妈</div>
+            <div style="flex:1;">
+              <div class="ios-row-title">妈妈</div>
+              <div class="ios-row-sub">好的！您早点休息。</div>
+            </div>
+            <div class="ios-row-time">10/11</div>
+          </div>
+          <div class="ios-row msg-row" data-chat="manager">
+            <div class="msg-avatar" style="background:#b06fa0;">啾</div>
+            <div style="flex:1;">
+              <div class="ios-row-title">脆纸鱼</div>
+              <div class="ios-row-sub">讨厌你！！！</div>
+            </div>
+            <div class="ios-row-time">10/08</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+},
+kakao: {
+  title: ' ',
+  backText: '‹ 首页',
+  content: `
+    <div class="ios-page">
+      <div class="ios-statusbar">
+        <span class="dynamic-time" style="font-weight:600;">9:41</span>
+        <div class="icons">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#000"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#000" stroke="none"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#000" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#000"/></svg>
+        </div>
+      </div>
+      <div class="ios-nav">
+        <div class="back" onclick="document.getElementById('appBack').click();">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          首页
+        </div>
+        <div class="title"></div>
+        <div class="right"></div>
+      </div>
+      <div class="ios-scroll">
+        <h1 class="ios-h1" style="padding:8px 16px 6px;">聊天</h1>
+        <div class="ios-list">
+          <div class="ios-row msg-row" data-kakao="miro">
+            <div class="msg-avatar"><img src="./assets/avatars/jiwoo.jpg" alt=""></div>
+            <div style="flex:1;">
+              <div class="ios-row-title">啾 ❤️</div>
+              <div class="ios-row-sub">(づ￣ 3￣)づ</div>
+            </div>
+            <div class="ios-row-time">上午10:00</div>
+          </div>
+          <div class="ios-row msg-row" data-kakao="birthday">
+            <div class="msg-avatar"><img src="./assets/avatars/hathuha.jpg" alt=""></div>
+            <div style="flex:1;">
+              <div class="ios-row-title" style="white-space:nowrap;overflow:hidden;font-size:15px;">🌴🍓🎀🧁👾🌻🫛😊</div>
+              <div class="ios-row-sub">在这里！这边！</div>
+            </div>
+            <div class="ios-row-time">昨天</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+},
+facetime: {
+  title: ' ',
+  content: `
+    <div class="ft-page">
+      <div class="ft-statusbar">
+        <span class="dynamic-time" style="font-weight:600;">9:41</span>
+        <div class="icons">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#000"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#000" stroke="none"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#000" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#000"/></svg>
+        </div>
+      </div>
+      <div class="ft-nav">
+        <div class="back" onclick="document.getElementById('appBack').click();">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          首页
+        </div>
+        <div class="title">FaceTime 通话</div>
+        <div class="add">＋</div>
+      </div>
+      <div class="ft-scroll">
+        <div class="ft-h1">最近通话</div>
+        <div class="ft-row">
+          <div class="avatar">매</div>
+          <div class="info">
+            <div class="name">❤️啾欧尼 ❤️</div>
+            <div class="sub">FaceTime 视频 · 已接听</div>
+          </div>
+          <div class="time">21:10</div>
+        </div>
+        <div class="ft-row">
+          <div class="avatar" style="background:#b06fa0;">啾</div>
+          <div class="info">
+            <div class="name">❤️啾欧尼 ❤️</div>
+            <div class="sub">FaceTime 音频 · 已接听</div>
+          </div>
+          <div class="time">18:20</div>
+        </div>
+        <div class="ft-row">
+          <div class="avatar" style="background:#c98a6b;">妈</div>
+          <div class="info">
+            <div class="name">妈妈</div>
+            <div class="sub">FaceTime 视频 · 已拨打</div>
+          </div>
+          <div class="time">10/12</div>
+        </div>
+        <div class="ft-row">
+          <div class="avatar" style="background:#c98a6b;">妈</div>
+          <div class="info">
+            <div class="name">妈妈</div>
+            <div class="sub">FaceTime 音频 · 已拨打</div>
+          </div>
+          <div class="time">10/11</div>
+        </div>
+        <div class="ft-row">
+          <div class="avatar" style="background:#8e8e93;">?</div>
+          <div class="info">
+            <div class="name">未知号码</div>
+            <div class="sub">FaceTime 视频 · 未接</div>
+          </div>
+          <div class="time">10/08</div>
+        </div>
+      </div>
+    </div>
+  `
+},
+weather: {
+  title: ' ',
+  content: `
+    <div class="wt-page">
+      <div class="wt-statusbar">
+        <span class="dynamic-time" style="font-weight:600;">9:41</span>
+        <div class="icons">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#fff"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#fff" stroke="none"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#fff" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#fff"/></svg>
+        </div>
+      </div>
+      <div class="wt-nav">
+        <div class="back" onclick="document.getElementById('appBack').click();">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7cc4ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          首页
+        </div>
+       <div style="width:44px;"></div>
+      </div>
+      <div class="wt-scroll">
+        <div class="wt-city">首尔</div>
+        <div class="wt-temp">21°</div>
+        <div class="wt-cond">晴</div>
+        <div class="wt-hl">最高 24° 最低 15°</div>
+
+        <div class="wt-card">
+          <div class="title">☀️ 今天 · 逐小时预报</div>
+          <div class="wt-hours">
+            <div class="wt-hour"><span>现在</span><span class="icon">☀️</span><span class="t">21°</span></div>
+            <div class="wt-hour"><span>11时</span><span class="icon">☀️</span><span class="t">22°</span></div>
+            <div class="wt-hour"><span>12时</span><span class="icon">⛅</span><span class="t">23°</span></div>
+            <div class="wt-hour"><span>13时</span><span class="icon">⛅</span><span class="t">24°</span></div>
+            <div class="wt-hour"><span>14时</span><span class="icon">☀️</span><span class="t">24°</span></div>
+            <div class="wt-hour"><span>15时</span><span class="icon">☀️</span><span class="t">23°</span></div>
+            <div class="wt-hour"><span>16时</span><span class="icon">🌤️</span><span class="t">22°</span></div>
+            <div class="wt-hour"><span>17时</span><span class="icon">🌙</span><span class="t">20°</span></div>
+          </div>
+        </div>
+
+        <div class="wt-card">
+          <div class="title">📅 未来 5 天</div>
+          <div class="wt-day-row"><span class="day">今天</span><span class="ic">☀️</span><span class="lo">15°</span><span class="bar"></span><span class="hi">24°</span></div>
+          <div class="wt-day-row"><span class="day">明天</span><span class="ic">⛅</span><span class="lo">14°</span><span class="bar"></span><span class="hi">22°</span></div>
+          <div class="wt-day-row"><span class="day">周三</span><span class="ic">🌧️</span><span class="lo">13°</span><span class="bar"></span><span class="hi">19°</span></div>
+          <div class="wt-day-row"><span class="day">周四</span><span class="ic">🌤️</span><span class="lo">14°</span><span class="bar"></span><span class="hi">21°</span></div>
+          <div class="wt-day-row"><span class="day">周五</span><span class="ic">☀️</span><span class="lo">16°</span><span class="bar"></span><span class="hi">25°</span></div>
+        </div>
+      </div>
+    </div>
+  `
+},      music: {
+        title: '🎵 音乐',
+        content: `
+          <div class="music-player">
+            <div class="cover">🎵</div>
+            <div class="song-title">ICONIC HEART</div>
+            <div class="song-artist">Hearts2Hearts</div>
+            <audio controls>
+              <source src="./assets/music/ICONIC HEART.mp3" type="audio/mpeg">
+              你的浏览器不支持音频播放。
+            </audio>
+          </div>
+          <div class="song-item" style="margin-top:16px;">下一首：RUDE!</div>
+          <div class="song-item">下一首：ICONIC HEART</div>
+        `
+      }
+    };
+document.querySelectorAll('[data-app]').forEach(el => {
+  el.addEventListener('click', () => {
+    const type = el.dataset.app;
+    const data = appData[type];
+    if (!data) return;
+    appTitle.textContent = data.title;
+    if (data.backText) appBack.textContent = data.backText;
+    else appBack.textContent = '‹ 首页';
+
+    // 让返回键在左边不跑偏
+    appBack.style.position = 'absolute';
+    appBack.style.left = '20px';
+    appBack.style.color = '#0b84ff';
+    appBody.innerHTML = data.content;
+    updateTime();
+    appModal.classList.add('show');
+  if (['phone', 'message', 'kakao', 'memo', 'safari', 'instagram', 'weverse', 'facetime', 'weather', 'naver', 'google', 'x'].includes(type)) {
+      appModal.classList.add('openIos');
+    } else {
+      appModal.classList.remove('openIos');
+    }
+  });
+});
+ appBack.addEventListener('click', () => {
+  // 如果当前在 Kakao 私聊页，回到列表页
+  if (appModal.classList.contains('kakaoOpen')) {
+    appModal.classList.remove('kakaoOpen');
+    appTitle.textContent = ' ';
+    appBack.textContent = '‹ 首页';
+    appBack.style.color = '#0b84ff';
+    appBody.innerHTML = appData.kakao.content;
+    return;
+  }
+   // 如果当前在备忘录详情页，回到备忘录列表
+  if (appModal.classList.contains('memoOpen')) {
+    appModal.classList.remove('memoOpen');
+    appTitle.textContent = ' ';
+    appBack.textContent = '‹ 首页';
+    appBack.style.color = '#0b84ff';
+    appBody.innerHTML = appData.memo.content;
+    return;
+  }
+  // 其它情况照常关闭弹窗
+  appModal.classList.remove('show', 'openIos', 'kakaoOpen', 'memoOpen');
+});
+// ===== Instagram 故事切换 =====
+const instaPostsData = {
+  jiwoo: null,
+  me: `
+    <div class="insta-post">
+      <div class="insta-post-head">
+        <img class="avatar" src="./assets/images/photo20.jpg" alt="">
+        <span class="uname">我的故事</span>
+        <span class="dots">⋯</span>
+      </div>
+      <img class="insta-post-img" src="./assets/images/photo1.jpg" alt="">
+      <div class="insta-actions">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span class="spacer"></span>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="insta-likes">999999999 次赞</div>
+      <div class="insta-caption"><span class="uname"></span>今天天气很好</div>
+      <div class="insta-time">刚刚</div>
+    </div>
+    <div class="insta-post">
+      <div class="insta-post-head">
+        <img class="avatar" src="./assets/images/photo20.jpg" alt="">
+        <span class="uname">我的故事</span>
+        <span class="dots">⋯</span>
+      </div>
+      <img class="insta-post-img" src="./assets/images/photo2.jpg" alt="">
+      <div class="insta-actions">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span class="spacer"></span>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="insta-likes">323232332 次赞</div>
+      <div class="insta-caption"><span class="uname"></span>随手拍</div>
+      <div class="insta-time">1 小时前</div>
+    </div>
+    <div class="insta-post">
+      <div class="insta-post-head">
+        <img class="avatar" src="./assets/images/photo20.jpg" alt="">
+        <span class="uname">我的故事</span>
+        <span class="dots">⋯</span>
+      </div>
+      <img class="insta-post-img" src="./assets/images/photo19.jpg" alt="">
+      <div class="insta-actions">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span class="spacer"></span>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="insta-likes">1234567899 次赞</div>
+      <div class="insta-caption"><span class="uname"></span>感谢一直一来大家的支持和陪伴</div>
+      <div class="insta-time">刚刚</div>
+    </div>
+  `
+};
+let instaJiwooHTML = null;
+document.addEventListener('click', (e) => {
+  const story = e.target.closest('.insta-story[data-story]');
+  if (!story) return;
+  const type = story.dataset.story;
+  const postsEl = document.getElementById('instaPosts');
+  if (!postsEl) return;
+  if (instaJiwooHTML === null) instaJiwooHTML = postsEl.innerHTML;
+  if (type === 'me') {
+    postsEl.innerHTML = instaPostsData.me;
+    const scrollEl = postsEl.closest('.insta-scroll');
+    if (scrollEl) scrollEl.scrollTop = 0;
+  } else if (type === 'jiwoo') {
+    postsEl.innerHTML = instaJiwooHTML;
+    const scrollEl = postsEl.closest('.insta-scroll');
+    if (scrollEl) scrollEl.scrollTop = 0;
+  }
+});
+// 打开文件夹
+const folderBtn = document.getElementById('folderBtn');
+const folderPanel = document.getElementById('folderPanel');
+folderBtn.addEventListener('click', () => {
+  folderPanel.classList.add('show');
+});
+
+// 点卡片外面关闭文件夹
+folderPanel.addEventListener('click', (e) => {
+  if (e.target === folderPanel) folderPanel.classList.remove('show');
+});// 点文件夹里的应用
+
+document.querySelectorAll('.folder-app').forEach(el => {
+  el.addEventListener('click', () => {
+    const type = el.dataset.app;
+    const data = appData[type];
+    if (!data) return;
+    folderPanel.classList.remove('show');
+    appTitle.textContent = data.title;
+    if (data.backText) appBack.textContent = data.backText;
+    else appBack.textContent = '‹ 首页';
+
+    // 让返回键在左边不跑偏
+    appBack.style.position = 'absolute';
+    appBack.style.left = '20px';
+    appBack.style.color = '#0b84ff';
+    appBody.innerHTML = data.content;
+    updateTime();
+    appModal.classList.add('show');
+  if (['phone', 'message', 'kakao', 'memo', 'safari', 'instagram', 'weverse', 'facetime', 'weather', 'naver', 'google', 'x'].includes(type)) {
+      appModal.classList.add('openIos');
+    } else {
+      appModal.classList.remove('openIos');
+    }
+  });
+});
+// ===== 信息聊天详情 =====
+const chatsData = {
+  mom: {
+    name: '妈妈',
+    messages: [
+      { from: 'them', text: '飞机落地记得报平安噢~', time: '10/11' },
+     { from: 'me', text: '好的！您早点休息。', time: '' }
+    ]
+  },
+  manager: {
+    name: '啾',
+    messages: [
+      { from: 'me', text: '讨厌你！！！', time: '' }
+    ]
+  }
+};
+function openApp(appName) {
+  const el = document.querySelector(`[data-app="${appName}"]`);
+  if (el) el.click();
+}
+function openChat(key) {
+  const chat = chatsData[key];
+  if (!chat) return;
+  appTitle.textContent = ' '; // 清空外部通用标题，使用内部顶栏
+  
+  appBody.innerHTML = `
+    <div class="ios-page" style="background:#fff;">
+      <!-- 1. 真实 iOS 状态栏 -->
+      <div class="ios-statusbar">
+        <span class="dynamic-time" style="font-weight:600;">9:41</span>
+        <div class="icons">
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="#000"><rect x="0" y="8" width="3" height="6" rx="1"/><rect x="5" y="5" width="3" height="9" rx="1"/><rect x="10" y="2" width="3" height="12" rx="1"/><rect x="15" y="0" width="3" height="14" rx="1"/></svg>
+          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5 C 6 1, 12 1, 16 5"/><path d="M5 8.5 C 7.5 6.5, 10.5 6.5, 13 8.5"/><circle cx="9" cy="12" r="1.5" fill="#000" stroke="none"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#000" stroke-width="1"/><path d="M24 4.5 V 8.5" stroke="#000" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="19" height="9" rx="1.5" fill="#000"/></svg>
+        </div>
+      </div>
+
+      <!-- 2. iOS 导航栏 -->
+      <div class="ios-nav" style="position:relative; justify-content:center; padding-bottom:6px;">
+        <!-- 左侧返回「‹ 信息」 -->
+        <div style="position:absolute; left:16px; top:50%; transform:translateY(-50%);">
+          <div class="back" onclick="openApp('message')" style="cursor:pointer; color:#0b84ff; font-size:17px; display:flex; align-items:center; gap:2px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0b84ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            信息
+          </div>
+        </div>
+        <!-- 中间联系人名字 + 副标题 -->
+        <div style="text-align:center;">
+          <div class="title" style="font-size:16px;font-weight:600;color:#000;line-height:1.2;">${chat.name}</div>
+          <div style="font-size:11px;color:#8e8e93;margin-top:2px;">短信</div>
+        </div>
+        <div style="position:absolute; right:16px;"></div>
+      </div>
+
+      <!-- 3. 聊天内容与输入框 -->
+      <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+        <div class="chat-body" style="background:#fff;">
+          ${chat.messages.map(m => `
+            <div class="chat-bubble-wrap ${m.from === 'me' ? 'me' : 'them'}">
+              ${m.time ? `<div class="chat-day">${m.time}</div>` : ''}
+              <div class="chat-bubble ${m.from}">${m.text}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="chat-input" style="background:#fff;">
+          <input type="text" placeholder="短信">
+        </div>
+      </div>
+    </div>
+  `;
+  
+  setTimeout(() => {
+    const body = appBody.querySelector('.chat-body');
+    if (body) body.scrollTop = body.scrollHeight;
+  }, 0);
+  updateTime(); // 立刻同步时间
+}
+// ===== Kakao 聊天详情 =====
+const kakaoChats = {
+  miro: {
+    name: '啾 ❤️',
+     avatar: './assets/avatars/jiwoo.jpg',
+    messages: [
+      { from: 'me', text: '开心！吃了好多好吃的', time: '09/06下午01:35' },
+      { from: 'them', text: '我也是，感觉好幸福啊😊', time: '' },
+      { from: 'me', text: '好啦，我先去休息啦！！', time: '' },
+      { from: 'me', text: '拜拜！', time: '' },
+      { from: 'them', text: '好', time: '下午01:39' },
+      { from: 'me', text: '生日粗卡🎂🎂🎂！！', time: '09/07凌晨12:00' },
+      { from: 'me', text: '当当当当……', time: '' },
+      { from: 'me', text: '我爱你呦 ❤️', time: '' },
+      { from: 'me', text: '我是不是第一名哼哼', time: '' },
+      { from: 'them', text: '我也爱你 ', time: '' },
+      { from: 'them', text: '不过现在我好想你……', time: '' },
+      { from: 'me', text: '才分开半天诶', time: '' },
+      { from: 'me', text: '而且今天白天还会再见的啊', time: '' },
+      { from: 'them', text: '好想和你躺在一起，我睡不着......', time: '' },
+      { from: 'me', text: '不洗澡的话，姐姐今晚就自己一个人睡吧', time: '09/07下午09:48' },
+      { from: 'them', text: '只是那么想着而已，没有打算真的不洗 ', time: '' },
+      { from: 'them', text: ' 不要这么狠心ㄒoㄒ~', time: '' },
+      { from: 'them', text: ' 降温了你不许吃雪糕  ￣へ￣  ', time: '10/08下午02：23' },
+      { from: 'them', text: ' 哈懵啊', time: '' },
+      { from: 'them', text: ' 明明在看手机，为什么不回欧尼信息', time: '' },
+      { from: 'them', text: ' .......', time: '' },
+      { from: 'me', text: '╰（‵□′）╯', time: '10/08下午03：11' },
+      { from: 'me', text: '辛苦啦', time: '上午09:58' },
+      { from: 'me', text: '啵啵', time: '' },
+      { from: 'them', text: '(づ￣ 3￣)づ', time: '' }
+    ]
+  },
+    birthday: {
+    name: '🌴🍓🎀🧁👾🌻🫛😊',
+    avatar: './assets/avatars/hathuha.jpg',
+    messages: [
+      { from: 'them', text: '不会写！', time: '下午2:05', name: '哈图哈', avatar: './assets/avatars/member1.jpg' },
+      { from: 'them', text: '一点也不会写！！', time: '', name: '哈图哈', avatar: './assets/avatars/member4.jpg' },
+      { from: 'them', text: '完全就是为了凑数！！', time: '', name: '哈图哈', avatar: './assets/avatars/member1.jpg' },
+      { from: 'them', text: '不会写不会写', time: '', name: '哈图哈', avatar: './assets/avatars/member5.jpg' },
+      { from: 'them', text: '偷偷偷个大懒。', time: '晚上7:05', name: '哈图哈', avatar: './assets/avatars/member5.jpg' },
+      { from: 'them', text:  '嘿你好', time: '晚上7:45', name: '哈图哈', avatar: './assets/avatars/member6.jpg' },
+      { from: 'them', text: '今天晚饭吃什么呢', time: '晚上9:05', name: '哈图哈', avatar: './assets/avatars/member6.jpg' },
+      { from: 'them', text: '什么什么打断骨头什么什么心连心', time: '晚上9:40', name: '哈图哈', avatar: './assets/avatars/member3.jpg' },
+      { from: 'them', text: '......', time: '', name: '哈图哈', avatar: './assets/avatars/member1.jpg' },
+       { from: 'them', text: '快过来一起拍照！', time: '', name: '小F', avatar: './assets/avatars/member6.jpg' },
+      { from: 'them', text: '大家带好应援棒呀！', time: '晚上9:42', name: '志宇', avatar: './assets/avatars/jiwoo.jpg' },
+      { from: 'them', text: '我已经在路上了~', time: '晚上9:45', name: '河岚', avatar: './assets/avatars/member1.jpg' },
+      { from: 'them', text: '等我等我！马上到！', time: '', name: '小A', avatar: './assets/avatars/member1.jpg' },
+      { from: 'them', text: '人齐了没？', time: '', name: '小B', avatar: './assets/avatars/member2.jpg' },
+      { from: 'them', text: '我先去占座！', time: '晚上9:50', name: '小C', avatar: './assets/avatars/member3.jpg' },
+      { from: 'them', text: '来了来了！', time: '', name: '主恩', avatar: './assets/avatars/member4.jpg' },
+      { from: 'me', text: '我到了我到了！你们在哪？', time: '晚上9:55' },
+      { from: 'them', text: '在这里！这边！', time: '', name: '一安尼', avatar: './assets/avatars/member5.jpg' },
+    ]
+  }
+};
+
+
+function openKakaoChat(key) {
+  const chat = kakaoChats[key];
+  if (!chat) return;
+  appTitle.textContent = chat.name; 
+ appBack.textContent = '‹ 聊天';
+  const avatarImg = chat.avatar || './assets/images/photo1.jpg';
+  appBody.innerHTML = `
+    <div class="chat-page kakao-page">
+      <div class="chat-body">
+        ${chat.messages.map(m => `
+          ${m.time ? `<div class="chat-day">${m.time}</div>` : ''}
+          <div class="chat-row ${m.from === 'me' ? 'me' : 'them'}">
+         ${m.from === 'them' ? `<img class="chat-avatar" src="${m.avatar || avatarImg}" alt="">` : ''}
+            <div class="chat-bubble ${m.from}">${m.text}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="chat-input">
+        <input type="text" placeholder="消息输入">
+      </div>
+    </div>
+  `;
+  setTimeout(() => {
+    const body = appBody.querySelector('.chat-body');
+    if (body) body.scrollTop = body.scrollHeight;
+  }, 0);
+  appModal.classList.add('kakaoOpen');
+}
+
+// 点击列表进入聊天
+document.addEventListener('click', (e) => {
+  const row = e.target.closest('.msg-row');
+  if (!row) return;
+  if (row.dataset.chat) openChat(row.dataset.chat);
+  if (row.dataset.kakao) openKakaoChat(row.dataset.kakao);
+});// ===== 备忘录条目点击 =====
+const memosData = {
+  birthday: {
+    title: '生日信',
+    date: '2026. 09. 04.',
+    content: `欧尼你好呀~~偶系哈蓝米
+真的真的祝你生日快乐🎉
+我不久前整理房间的时候，翻到了欧尼练习生时期写给我的信，上面写着“我们出道了以后一起做很多有趣的事情吧~ 现在距离出道真的没剩多少时间了~ ”原来还有这样的内容呢kk
+感觉我们一起在放学后去公司上班还是昨天的事
+没想到我们就这样出道了，共同组成了名为Hearts2Hearts的团体
+还拥有了粉丝们，真是太神奇了kkk
+我们以后也要健康地一起长长久久地活动~~
+以后也会一辈子在欧尼身边给你庆祝生日哒🎉
+生日超级超级×100祝福你~♡ ×500
+- Yuhaha -`
+  },
+  course: {
+    title: 'MCD',
+    date: '2026. 10. 15.',
+    content: `MCD打歌`
+  },
+  note222: {
+    title: '录音',
+    date: '2026. 09. 18.',
+    content: `11点 录音
+下午2点 编舞练习
+地点：3号练习室
+带好水和毛巾，注意拉伸。`
+  },
+  comeback: {
+    title: '复制粘贴',
+    date: '2026. 08. 23.',
+    content: `世一配`
+  },
+  jiwoo: {
+    title: '🎂',
+    date: '2026. 01. 04.',
+    content: `🎉
+🌴0328
+🍓0907
+🎀0412
+🧁0618
+👾1203
+🌻1220
+🫛1009
+😊0419`
+  },
+  coder: {
+    title: '码农又有话说',
+    date: '2026. 01. 01.',
+    content: `碎碎念。
+ 微博号太烂 碎碎念就偷偷塞在这里
+ - 这真的只是一个作为"捡手机"式叙事页面的底稿，很糙的底稿。还有几处结构性 bug，我也懒得再修复了。 对里面的内容有想修改的都可以在评论区下留言，我看到的话都会总结的，下个月中旬有时间就可以统一修改。只是我的评论容易被吞，私信也是。不太容易及时回复，有时只能看到数字并不能看到消息。
+-初心只是想做成一个有叙事性的完整体，但是时间精力我近期都没有，能力也有限。很抱歉就这么端上来了。
+`
+  }
+};
+document.addEventListener('click', (e) => {
+  const item = e.target.closest('.memo-item');
+  if (!item) return;
+  const memo = memosData[item.dataset.memo];
+  if (!memo) return;
+  appTitle.textContent = ' ';
+  appBack.textContent = '‹ 备忘录';
+  appBack.style.color = '#ff9500';      // 黄色返回
+  appBody.innerHTML = `
+    <div style="
+      background:#fff;
+      min-height:100%;
+      margin:-10px -24px -24px;
+      padding:20px 24px 100px;
+      color:#000;
+    ">
+      <div style="font-size:13px;color:#8e8e93;margin-bottom:8px;text-align:center;">${memo.date}</div>
+      <div style="font-size:24px;font-weight:700;color:#000;margin-bottom:20px;">${memo.title}</div>
+      <div style="font-size:16px;line-height:1.8;color:#000;white-space:pre-wrap;">${memo.content}</div>
+    </div>
+  `;
+  appModal.classList.add('show');
+  appModal.classList.add('openIos');
+  appModal.classList.add('memoOpen');
+});
+// ===== YouTube 卡片点击跳转 =====
+document.addEventListener('click', (e) => {
+  const card = e.target.closest('.yt-card');
+  if (!card) return;
+  const url = card.dataset.url;
+  if (!url) return;
+    window.location.href = url;
+});
+// 点击照片图片放大
+document.addEventListener('click', (e) => {
+ if (e.target.tagName === 'IMG' && e.target.closest('.photo-grid')) {
+    const src = e.target.src;
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.95);display:grid;place-items:center;z-index:9999;cursor:pointer;';
+    overlay.innerHTML = `
+      <div style="position:absolute;top:20px;left:20px;color:#fff;font-size:16px;">‹ 图库</div>
+      <img src="${src}" style="max-width:90%;max-height:90%;border-radius:16px;">
+    `;
+    overlay.onclick = () => overlay.remove();
+    document.body.appendChild(overlay);
+  }
+});
+ // ===== 相册照片 自动生成 =====
+// 想加多少张，就把下面数字改大（比如改成 100）
+const PHOTO_COUNT = 25;
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('[data-app="photos"]')) return;
+  setTimeout(() => {
+    const grid = document.getElementById('photoGrid');
+    if (!grid) return;
+    let html = '';
+    for (let i = 1; i <= PHOTO_COUNT; i++) {
+         html += `<img src="./assets/images/photo${i}.jpg" alt="">`;
+    }
+    grid.innerHTML = html;
+  }, 30);
+});
+// ===== 日历功能 =====
+let now = new Date();
+let calCurrentYear = now.getFullYear();
+let calCurrentMonth = now.getMonth() + 1;
+let calSelectedDay = now.getDate();
+
+// 行程数据：key 是 "年-月-日"，value 是行程文字
+const calEventsData = {
+  '2026-10-15': { title: 'MCD打歌', time: '全天' },
+  '2026-09-07': { title: '啾HBD', time: '全天' },
+  '2025-02-24': { title: '出道', time: '全天' },
+  '2026-10-17': { title: '出道600天❗', time: '全天' },
+};
+function renderCalendar() {
+  const daysEl = document.getElementById('calDays');
+  const monthEl = document.querySelector('.cal-month');
+  const yearEl = document.querySelector('.cal-year');
+  if (!daysEl) return;
+
+  monthEl.textContent = calCurrentMonth;
+  yearEl.textContent = calCurrentYear;
+
+  const firstDay = new Date(calCurrentYear, calCurrentMonth - 1, 1).getDay();
+  const daysInMonth = new Date(calCurrentYear, calCurrentMonth, 0).getDate();
+  const daysInPrev = new Date(calCurrentYear, calCurrentMonth - 1, 0).getDate();
+
+  let html = '';
+
+  // 上个月的尾巴
+  for (let i = firstDay - 1; i >= 0; i--) {
+    html += `<div class="cal-day other-month">${daysInPrev - i}</div>`;
+  }
+
+  // 本月
+  const today = new Date();
+  const isThisMonth = today.getFullYear() === calCurrentYear && (today.getMonth() + 1) === calCurrentMonth;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateKey = `${calCurrentYear}-${String(calCurrentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const hasEvent = calEventsData[dateKey];
+    let cls = 'cal-day';
+    if (isThisMonth && d === today.getDate()) cls += ' today';
+    else if (d === calSelectedDay) cls += ' selected';
+
+    html += `<div class="${cls}" data-day="${d}">${d}${hasEvent ? '<span class="dot"></span>' : ''}</div>`;
+  }
+
+  // 下个月的头
+  const totalCells = firstDay + daysInMonth;
+  const remaining = (7 - (totalCells % 7)) % 7;
+  for (let i = 1; i <= remaining; i++) {
+    html += `<div class="cal-day other-month">${i}</div>`;
+  }
+
+  daysEl.innerHTML = html;
+
+  // 更新下方行程
+  const dateKey = `${calCurrentYear}-${String(calCurrentMonth).padStart(2, '0')}-${String(calSelectedDay).padStart(2, '0')}`;
+  const event = calEventsData[dateKey];
+  const eventDateEl = document.getElementById('calEventDate');
+  const eventTitleEl = document.getElementById('calEventTitle');
+  const eventTimeEl = document.querySelector('.cal-event-time');
+
+  if (eventDateEl) {
+    eventDateEl.textContent = `${calCurrentMonth}月${calSelectedDay}日`;
+    eventTitleEl.textContent = event ? event.title : '没有时间表';
+    eventTimeEl.textContent = event ? event.time : '';
+  }
+
+  // 点击日期
+  daysEl.querySelectorAll('.cal-day:not(.other-month)').forEach(el => {
+    el.addEventListener('click', () => {
+      calSelectedDay = parseInt(el.dataset.day);
+      renderCalendar();
+    });
+  });
+}
+
+// 切换月份
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'calPrev') {
+    calCurrentMonth--;
+    if (calCurrentMonth < 1) { calCurrentMonth = 12; calCurrentYear--; }
+    renderCalendar();
+  }
+  if (e.target.id === 'calNext') {
+    calCurrentMonth++;
+    if (calCurrentMonth > 12) { calCurrentMonth = 1; calCurrentYear++; }
+    renderCalendar();
+  }
+});
+
+// 打开日历时渲染
+const originalAppClick = document.querySelectorAll('[data-app="calendar"]');
+originalAppClick.forEach(el => {
+  el.addEventListener('click', () => {
+    setTimeout(renderCalendar, 50);
+  });
+}); // 主屏日历自动显示今天
+(function updateHomeCalendar() {
+  const now = new Date();
+  const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+  const weekEl = document.getElementById('homeCalWeek');
+  const dayEl = document.getElementById('homeCalDay');
+  if (weekEl && dayEl) {
+    weekEl.textContent = weekdays[now.getDay()];
+    dayEl.textContent = now.getDate();
+  }
+})();
+</script>
+</body>
+</html>
